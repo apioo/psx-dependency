@@ -32,8 +32,8 @@ class MyContainer extends \PSX\Dependency\Container
 
 ```
 
-Besides this it is also possible to set services on a container in the "Pimple" 
-way. Through this you can easily extend or overwrite existing containers.
+Also it is also possible to set services on a container in the "Pimple" way. 
+Through this you can easily extend or overwrite existing containers.
 
 ```php
 <?php
@@ -55,9 +55,10 @@ $container->set('bar_service', function(ContainerInterface $c){
 ### Object builder
 
 The object builder resolves properties with an `@Inject` annotation and tries
-to inject the fitting service to the property. Note usually it is recommended to 
-use simple constructor injection, this class is designed for cases where this is 
-not feasible.
+to inject the fitting service to the property. If no explicit service name was 
+provided the property name is used. Note usually it is recommended to use simple
+constructor injection, this class is designed for cases where this is not 
+feasible.
 
 ```php
 <?php
