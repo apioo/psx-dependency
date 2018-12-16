@@ -20,6 +20,7 @@
 
 namespace PSX\Dependency\Tests;
 
+use PHPUnit\Framework\TestCase;
 use PSX\Dependency\Container;
 
 /**
@@ -29,7 +30,7 @@ use PSX\Dependency\Container;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class ContainerTest extends \PHPUnit_Framework_TestCase
+class ContainerTest extends TestCase
 {
     public function testSet()
     {

@@ -22,6 +22,7 @@ namespace PSX\Dependency\Tests;
 
 use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use Doctrine\Common\Cache\ArrayCache;
+use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use PSX\Cache\Pool;
 use PSX\Dependency\Container;
@@ -34,7 +35,7 @@ use PSX\Dependency\ObjectBuilder;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class ObjectBuilderTest extends \PHPUnit_Framework_TestCase
+class ObjectBuilderTest extends TestCase
 {
     public function testGetObject()
     {
