@@ -3,9 +3,9 @@ PSX Dependency
 
 ## About
 
-A simple and fast PSR-11 compatible DI container. Besides the DI container it
-provides a class which can resolve objects containing `@Inject` annotations 
-using the doctrine annotation reader.
+A simple and fast PSR-11 compatible DI container with features to autowire, tag
+and inject services. Instead of YAML or config files services are simply defined
+at a class by adding i.e. a `getMyService` method.
 
 ## Usage
 
@@ -19,12 +19,15 @@ definitions which can be accessed if a new container is created.
 
 class MyContainer extends \PSX\Dependency\Container
 {
-    public function getFooService()
+    public function getFooService(): FooService
     {
         return new FooService();
     }
     
-    public function getBarService()
+    /**
+     * @Tag("my_tag")
+     */
+    public function getBarService(): BarService
     {
         return new BarService($this->get('foo_service'));
     }
@@ -32,25 +35,51 @@ class MyContainer extends \PSX\Dependency\Container
 
 ```
 
-Also it is also possible to set services on a container in the "Pimple" way. 
-Through this you can easily extend or overwrite existing containers.
+### Autowire
+
+The following example shows how you can use the autowiring feature:
 
 ```php
 <?php
 
-use Psr\Container\ContainerInterface;
+$reader = new SimpleAnnotationReader();
+$reader->addNamespace('PSX\Dependency\Annotation');
 
-$container = new \PSX\Dependency\Container();
+$container = new MyContainer();
+$inspector = new ContainerInspector($container, $reader);
 
-$container->set('foo_service', function(ContainerInterface $c){
-    return new FooService();
-});
+$autowireResolver = new AutowireResolver($container, $inspector);
 
-$container->set('bar_service', function(ContainerInterface $c){
-    return new BarService($c->get('foo_service'));
-});
-
+$service = $autowireResolver->getObject(AutowireService::class);
 ```
+
+The autowire resolver checks all arguments of the constructor of the `AutowireService`
+class and tries to resolve each type based on the return type of the method
+definitions in the container. Please take a look at test cases to see a complete
+example.
+
+### Tags
+
+The following example shows how to get services which are annotated by a
+specific tag:
+
+```php
+<?php
+
+$reader = new SimpleAnnotationReader();
+$reader->addNamespace('PSX\Dependency\Annotation');
+
+$container = new MyContainer();
+$inspector = new ContainerInspector($container, $reader);
+
+$tagResolver = new TagResolver($container, $inspector);
+
+$services = $tagResolver->getServicesByTag('my_tag');
+```
+
+To tag you service you need to add the `@Tag` annotation to your service
+definition method. Then it is possible to use tag resolver to receive all
+services which have added a specific tag.
 
 ### Object builder
 
@@ -106,4 +135,27 @@ $builder = new \PSX\Dependency\ObjectBuilder(
 $controller = $builder->getObject(MyController::class);
 
 ```
+
+### Factory
+
+It is also possible to set services on a container in the "Pimple" way. Through
+this you can easily extend or overwrite existing containers.
+
+```php
+<?php
+
+use Psr\Container\ContainerInterface;
+
+$container = new \PSX\Dependency\Container();
+
+$container->set('foo_service', function(ContainerInterface $c){
+    return new FooService();
+});
+
+$container->set('bar_service', function(ContainerInterface $c){
+    return new BarService($c->get('foo_service'));
+});
+
+```
+
 
