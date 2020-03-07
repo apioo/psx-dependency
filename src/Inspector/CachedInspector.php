@@ -44,20 +44,13 @@ class CachedInspector implements InspectorInterface
     protected $cache;
 
     /**
-     * @var boolean
-     */
-    protected $debug;
-
-    /**
      * @param \PSX\Dependency\InspectorInterface $inspector
      * @param \Psr\Cache\CacheItemPoolInterface $cache
-     * @param boolean $debug
      */
-    public function __construct(InspectorInterface $inspector, CacheItemPoolInterface $cache, $debug)
+    public function __construct(InspectorInterface $inspector, CacheItemPoolInterface $cache)
     {
         $this->inspector = $inspector;
         $this->cache     = $cache;
-        $this->debug     = $debug;
     }
 
     /**
@@ -86,20 +79,15 @@ class CachedInspector implements InspectorInterface
     
     private function cachedCall(string $methodName, string $cacheKey)
     {
-        $item = null;
-        if (!$this->debug) {
-            $item = $this->cache->getItem($cacheKey);
-            if ($item->isHit()) {
-                return $item->get();
-            }
+        $item = $this->cache->getItem($cacheKey);
+        if ($item->isHit()) {
+            return $item->get();
         }
 
         $result = $this->inspector->$methodName();
 
-        if (!$this->debug && $item instanceof CacheItemInterface) {
-            $item->set($result);
-            $this->cache->save($item);
-        }
+        $item->set($result);
+        $this->cache->save($item);
 
         return $result;
     }
