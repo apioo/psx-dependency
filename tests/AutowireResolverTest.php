@@ -43,10 +43,10 @@ class AutowireResolverTest extends TestCase
         $container = new MyContainer();
         $inspector = new ContainerInspector($container, $reader);
 
-        $tagResolver = new AutowireResolver($container, $inspector);
+        $autowireResolver = new AutowireResolver($container, $inspector);
 
         /** @var AutowireService $service */
-        $service = $tagResolver->getObject(AutowireService::class);
+        $service = $autowireResolver->getObject(AutowireService::class);
 
         $this->assertInstanceOf(AutowireService::class, $service);
         $this->assertInstanceOf(FooService::class, $service->getFoo());
