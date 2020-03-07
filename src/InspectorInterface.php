@@ -30,16 +30,25 @@ namespace PSX\Dependency;
 interface InspectorInterface
 {
     /**
+     * Returns all available service ids of the container sorted by name
+     * ascending
+     * 
      * @return array
      */
     public function getServiceIds(): array;
 
     /**
+     * Returns an array where the key is the return type and the value the
+     * service id
+     * 
      * @return array
      */
     public function getTypedServiceIds(): array;
 
     /**
+     * Returns an array where the key is the tag name and the value an array of
+     * service ids
+     * 
      * @return array
      */
     public function getTaggedServiceIds(): array;
