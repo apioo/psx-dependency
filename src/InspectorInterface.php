@@ -21,7 +21,7 @@
 namespace PSX\Dependency;
 
 /**
- * InspectorInterface
+ * Service which inspects available services on a container
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
