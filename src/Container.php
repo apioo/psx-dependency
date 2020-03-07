@@ -20,10 +20,7 @@
 
 namespace PSX\Dependency;
 
-use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
-use ReflectionClass;
-use ReflectionException;
 
 /**
  * A simple and fast PSR container implementation
@@ -37,17 +34,17 @@ class Container implements ContainerInterface
     /**
      * @var array
      */
-    protected $factories;
+    private $factories;
 
     /**
      * @var array
      */
-    protected $services;
+    private $services;
 
     /**
      * @var array
      */
-    protected $parameters;
+    private $parameters;
 
     public function __construct()
     {
@@ -137,7 +134,7 @@ class Container implements ContainerInterface
         if ($this->hasParameter($name)) {
             return $this->parameters[$name];
         } else {
-            throw new InvalidArgumentException('Parameter ' . $name . ' not set');
+            throw new NotFoundException('Parameter ' . $name . ' not set');
         }
     }
 
@@ -150,74 +147,6 @@ class Container implements ContainerInterface
         $name = strtolower($name);
 
         return isset($this->parameters[$name]);
-    }
-
-    /**
-     * Returns all available service ids of this container
-     *
-     * @return array
-     * @throws \ReflectionException
-     */
-    public function getServiceIds()
-    {
-        $services  = [];
-        $reserved  = ['get', 'getParameter', 'getServiceIds', 'getReturnType'];
-        $container = new \ReflectionClass($this);
-
-        foreach ($this->factories as $name => $factory) {
-            $services[] = self::underscore($name);
-        }
-
-        foreach ($container->getMethods() as $method) {
-            if (!in_array($method->name, $reserved) && preg_match('/^get(.+)$/', $method->name, $match)) {
-                $services[] = self::underscore($match[1]);
-            }
-        }
-
-        sort($services);
-
-        return $services;
-    }
-
-    /**
-     * Tries to determine the return type of a service. At first we try to
-     * determine the type from the return annotation which is in most cases
-     * more useful because it could specify an interface instead of an concrete
-     * implementation. As fallback we get an instance of the service and return
-     * the type
-     *
-     * @param string $name
-     * @return string
-     * @throws \ReflectionException
-     * @throws \Psr\Container\NotFoundExceptionInterface
-     */
-    public function getReturnType($name)
-    {
-        $container = new ReflectionClass($this);
-
-        try {
-            $method = $container->getMethod('get' . self::normalizeName($name));
-            $doc    = $method->getDocComment();
-            
-            if (!empty($doc)) {
-                preg_match('/@return ([a-zA-Z0-9_\x7f-\xff\x5c]+)/', $doc, $matches);
-
-                if (isset($matches[1])) {
-                    return $matches[1];
-                }
-            }
-        } catch (ReflectionException $e) {
-            // method does not exist
-        }
-
-        // as fallback we get the service and return the used type
-        $service = $this->get($name);
-
-        if (is_object($service)) {
-            return get_class($service);
-        } else {
-            return gettype($service);
-        }
     }
 
     /**

@@ -116,7 +116,7 @@ class ContainerTest extends TestCase
     }
 
     /**
-     * @expectedException \InvalidArgumentException
+     * @expectedException \PSX\Dependency\NotFoundException
      */
     public function testInvalidGetParameter()
     {
@@ -145,28 +145,6 @@ class ContainerTest extends TestCase
         $sc->get('foo_bar');
 
         $this->assertTrue($sc->initialized('foo_bar'));
-    }
-
-    public function testGetServiceIds()
-    {
-        $sc = new ProjectServiceContainer();
-
-        $sc->set('baz', function(){
-            return new \stdClass();
-        });
-
-        $services = $sc->getServiceIds();
-
-        $this->assertEquals(array('bar', 'baz', 'foo_bar', 'scalar'), $services);
-    }
-
-    public function testGetReturnType()
-    {
-        $sc = new ProjectServiceContainer();
-
-        $this->assertEquals('stdClass', $sc->getReturnType('bar'));
-        $this->assertEquals('\stdClass', $sc->getReturnType('foo_bar'));
-        $this->assertEquals('array', $sc->getReturnType('scalar'));
     }
 
     /**
