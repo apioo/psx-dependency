@@ -41,6 +41,11 @@ class TypeResolver implements TypeResolverInterface
      */
     private $inspector;
 
+    /**
+     * @var array
+     */
+    private $types;
+
     public function __construct(ContainerInterface $container, InspectorInterface $inspector)
     {
         $this->container = $container;
@@ -52,10 +57,12 @@ class TypeResolver implements TypeResolverInterface
      */
     public function getServiceByType(string $class)
     {
-        $types = $this->inspector->getTypedServiceIds();
+        if (!$this->types) {
+            $this->types = $this->inspector->getTypedServiceIds();
+        }
 
-        if (isset($types[$class])) {
-            return $this->container->get($types[$class]);
+        if (isset($this->types[$class])) {
+            return $this->container->get($this->types[$class]);
         } else {
             return $this->container->get($class);
         }
