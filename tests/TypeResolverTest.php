@@ -22,52 +22,41 @@ namespace PSX\Dependency\Tests;
 
 use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use PHPUnit\Framework\TestCase;
-use PSX\Dependency\AutowireResolver;
-use PSX\Dependency\AutowireResolverInterface;
 use PSX\Dependency\Inspector\ContainerInspector;
 use PSX\Dependency\TagResolver;
+use PSX\Dependency\TagResolverInterface;
 use PSX\Dependency\TypeResolver;
+use PSX\Dependency\TypeResolverInterface;
+use PSX\V8\Tests\Object\Foo;
 
 /**
- * AutowireResolverTest
+ * TypeResolverTest
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class AutowireResolverTest extends TestCase
+class TypeResolverTest extends TestCase
 {
-    public function testGetObject()
+    public function testGetServiceByType()
     {
-        $autowireResolver = $this->newAutowireResolver();
+        $typeResolver = $this->newTypeResolver();
 
-        /** @var AutowireService $service */
-        $service = $autowireResolver->getObject(AutowireService::class);
+        $service = $typeResolver->getServiceByType(FooService::class);
+        $this->assertInstanceOf(FooService::class, $service);
 
-        $this->assertInstanceOf(AutowireService::class, $service);
-        $this->assertInstanceOf(FooService::class, $service->getFoo());
-        $this->assertInstanceOf(BarService::class, $service->getBar());
-    }
-
-    public function testGetObjectNoConstructor()
-    {
-        $autowireResolver = $this->newAutowireResolver();
-
-        /** @var BarService $service */
-        $service = $autowireResolver->getObject(BarService::class);
-
+        $service = $typeResolver->getServiceByType(BarService::class);
         $this->assertInstanceOf(BarService::class, $service);
     }
 
-    private function newAutowireResolver(): AutowireResolverInterface
+    private function newTypeResolver(): TypeResolverInterface
     {
         $reader = new SimpleAnnotationReader();
         $reader->addNamespace('PSX\Dependency\Annotation');
 
         $container = new MyContainer();
         $inspector = new ContainerInspector($container, $reader);
-        $typeResolver = new TypeResolver($container, $inspector);
 
-        return new AutowireResolver($typeResolver);
+        return new TypeResolver($container, $inspector);
     }
 }
