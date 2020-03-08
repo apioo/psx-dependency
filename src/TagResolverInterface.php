@@ -20,43 +20,20 @@
 
 namespace PSX\Dependency;
 
-use Psr\Container\ContainerInterface;
-
 /**
- * TagResolver
+ * TagResolverInterface
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class TagResolver implements TagResolverInterface
+interface TagResolverInterface
 {
     /**
-     * @var ContainerInterface
+     * Returns all services which have a specific tag assigned
+     * 
+     * @param string $tag
+     * @return iterable
      */
-    private $container;
-
-    /**
-     * @var InspectorInterface
-     */
-    private $inspector;
-
-    public function __construct(ContainerInterface $container, InspectorInterface $inspector)
-    {
-        $this->container = $container;
-        $this->inspector = $inspector;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getServicesByTag(string $tag): iterable
-    {
-        $tags = $this->inspector->getTaggedServiceIds();
-        if (isset($tags[$tag])) {
-            foreach ($tags[$tag] as $serviceId) {
-                yield $this->container->get($serviceId);
-            }
-        }
-    }
+    public function getServicesByTag(string $tag): iterable;
 }
