@@ -23,6 +23,7 @@ namespace PSX\Dependency\Tests;
 use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use PHPUnit\Framework\TestCase;
 use PSX\Dependency\AutowireResolver;
+use PSX\Dependency\AutowireResolverInterface;
 use PSX\Dependency\Inspector\ContainerInspector;
 use PSX\Dependency\TagResolver;
 
@@ -35,15 +36,9 @@ use PSX\Dependency\TagResolver;
  */
 class AutowireResolverTest extends TestCase
 {
-    public function testGetServicesByTag()
+    public function testGetObject()
     {
-        $reader = new SimpleAnnotationReader();
-        $reader->addNamespace('PSX\Dependency\Annotation');
-
-        $container = new MyContainer();
-        $inspector = new ContainerInspector($container, $reader);
-
-        $autowireResolver = new AutowireResolver($container, $inspector);
+        $autowireResolver = $this->newAutowireResolver();
 
         /** @var AutowireService $service */
         $service = $autowireResolver->getObject(AutowireService::class);
@@ -51,5 +46,26 @@ class AutowireResolverTest extends TestCase
         $this->assertInstanceOf(AutowireService::class, $service);
         $this->assertInstanceOf(FooService::class, $service->getFoo());
         $this->assertInstanceOf(BarService::class, $service->getBar());
+    }
+
+    public function testGetObjectNoConstructor()
+    {
+        $autowireResolver = $this->newAutowireResolver();
+
+        /** @var BarService $service */
+        $service = $autowireResolver->getObject(BarService::class);
+
+        $this->assertInstanceOf(BarService::class, $service);
+    }
+
+    private function newAutowireResolver(): AutowireResolverInterface
+    {
+        $reader = new SimpleAnnotationReader();
+        $reader->addNamespace('PSX\Dependency\Annotation');
+
+        $container = new MyContainer();
+        $inspector = new ContainerInspector($container, $reader);
+
+        return new AutowireResolver($container, $inspector);
     }
 }

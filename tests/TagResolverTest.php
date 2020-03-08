@@ -24,6 +24,7 @@ use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use PHPUnit\Framework\TestCase;
 use PSX\Dependency\Inspector\ContainerInspector;
 use PSX\Dependency\TagResolver;
+use PSX\Dependency\TagResolverInterface;
 
 /**
  * TagResolverTest
@@ -36,18 +37,23 @@ class TagResolverTest extends TestCase
 {
     public function testGetServicesByTag()
     {
-        $reader = new SimpleAnnotationReader();
-        $reader->addNamespace('PSX\Dependency\Annotation');
-
-        $container = new MyContainer();
-        $inspector = new ContainerInspector($container, $reader);
-
-        $tagResolver = new TagResolver($container, $inspector);
+        $tagResolver = $this->newTagResolver();
 
         $services = $tagResolver->getServicesByTag('my_tag');
 
         foreach ($services as $service) {
             $this->assertInstanceOf(BarService::class, $service);
         }
+    }
+
+    private function newTagResolver(): TagResolverInterface
+    {
+        $reader = new SimpleAnnotationReader();
+        $reader->addNamespace('PSX\Dependency\Annotation');
+
+        $container = new MyContainer();
+        $inspector = new ContainerInspector($container, $reader);
+
+        return new TagResolver($container, $inspector);
     }
 }
