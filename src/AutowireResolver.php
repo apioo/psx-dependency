@@ -29,7 +29,7 @@ use Psr\Container\ContainerInterface;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class AutowireResolver
+class AutowireResolver implements AutowireResolverInterface
 {
     /**
      * @var ContainerInterface
@@ -47,13 +47,23 @@ class AutowireResolver
         $this->inspector = $inspector;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getObject(string $class)
     {
-        $reflection = new \ReflectionClass($class);
-        $parameters = $reflection->getConstructor()->getParameters();
+        $types       = $this->inspector->getTypedServiceIds();
+        $reflection  = $this->newReflection($class);
+        $constructor = $reflection->getConstructor();
+
+        if (!$constructor instanceof \ReflectionMethod) {
+            // in case there is no constructor
+            return $reflection->newInstanceArgs();
+        }
+
+        $parameters = $constructor->getParameters();
         $arguments  = [];
-        $types      = $this->inspector->getTypedServiceIds();
-        
+
         foreach ($parameters as $parameter) {
             $type = $parameter->getType();
 
@@ -73,5 +83,19 @@ class AutowireResolver
         }
 
         return $reflection->newInstanceArgs($arguments);
+    }
+
+    /**
+     * @param string $class
+     * @return \ReflectionClass
+     * @throws AutowiredException
+     */
+    private function newReflection(string $class): \ReflectionClass
+    {
+        try {
+            return new \ReflectionClass($class);
+        } catch (\ReflectionException $e) {
+            throw new AutowiredException('Provided class ' . $class . ' does not exist', 0, $e);
+        }
     }
 }
