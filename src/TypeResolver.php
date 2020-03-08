@@ -54,10 +54,10 @@ class TypeResolver implements TypeResolverInterface
     {
         $types = $this->inspector->getTypedServiceIds();
 
-        if (!isset($types[$class])) {
-            throw new NotFoundException('Container does not contains a service to resolve ' . $class);
+        if (isset($types[$class])) {
+            return $this->container->get($types[$class]);
+        } else {
+            return $this->container->get($class);
         }
-
-        return $this->container->get($types[$class]);
     }
 }
