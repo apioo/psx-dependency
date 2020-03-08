@@ -20,8 +20,6 @@
 
 namespace PSX\Dependency;
 
-use Psr\Container\ContainerInterface;
-
 /**
  * AutowireResolver
  *
@@ -32,19 +30,13 @@ use Psr\Container\ContainerInterface;
 class AutowireResolver implements AutowireResolverInterface
 {
     /**
-     * @var ContainerInterface
+     * @var TypeResolverInterface
      */
-    private $container;
+    private $typeResolver;
 
-    /**
-     * @var InspectorInterface
-     */
-    private $inspector;
-
-    public function __construct(ContainerInterface $container, InspectorInterface $inspector)
+    public function __construct(TypeResolverInterface $typeResolver)
     {
-        $this->container = $container;
-        $this->inspector = $inspector;
+        $this->typeResolver = $typeResolver;
     }
 
     /**
@@ -52,7 +44,6 @@ class AutowireResolver implements AutowireResolverInterface
      */
     public function getObject(string $class)
     {
-        $types       = $this->inspector->getTypedServiceIds();
         $reflection  = $this->newReflection($class);
         $constructor = $reflection->getConstructor();
 
@@ -68,17 +59,9 @@ class AutowireResolver implements AutowireResolverInterface
             $type = $parameter->getType();
 
             if ($type instanceof \ReflectionNamedType) {
-                $serviceId = $types[$type->getName()] ?? null;
-
-                if ($serviceId === null) {
-                    throw new AutowiredException('Could not find type ' . $type->getName() . ' in container');
-                }
-
-                $arguments[] = $this->container->get($serviceId);
+                $arguments[] = $this->typeResolver->getServiceByType($type->getName());
             } else {
-                // in case we have no type-hint we try to resolve the dependency
-                // based on the name
-                $arguments[] = $this->container->get($parameter->getName());
+                $arguments[] = $this->typeResolver->getServiceByType($parameter->getName());
             }
         }
 
