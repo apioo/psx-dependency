@@ -72,16 +72,22 @@ class ContainerInspector implements InspectorInterface
         $types   = [];
 
         foreach ($methods as $name => $method) {
-            $type = null;
-            try {
-                $type = $this->getReturnTypeForMethod($method);
-            } catch (\ReflectionException $e) {
-                // method does not exist
+            $type = $this->getReturnTypeForMethod($method);
+            if ($type === null) {
+                continue;
             }
 
-            if ($type !== null) {
-                $types[$type] = $name;
+            $class = new \ReflectionClass($type);
+            if ($class->isInterface()) {
+                // in case the return type is an interface we need to get also
+                // the class of the concrete implementation, this allows us to
+                // resolve concrete type-hints in case multiple implementations
+                // exist for an interface
+                $instance = $this->container->get($name);
+                $types[get_class($instance)] = $name;
             }
+
+            $types[$class->getName()] = $name;
         }
 
         return $types;
@@ -149,8 +155,8 @@ class ContainerInspector implements InspectorInterface
         $comment = $method->getDocComment();
         if (!empty($comment)) {
             $type = self::getAnnotationValue($comment, 'return');
-            if ($type !== null && class_exists($type)) {
-                return ltrim($type, '\\');
+            if ($type !== null) {
+                return $type;
             }
         }
 
