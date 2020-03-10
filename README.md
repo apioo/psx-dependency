@@ -47,8 +47,8 @@ $reader->addNamespace('PSX\Dependency\Annotation');
 
 $container = new MyContainer();
 $inspector = new ContainerInspector($container, $reader);
-
-$autowireResolver = new AutowireResolver($container, $inspector);
+$typeResolver = new TypeResolver($container, $inspector);
+$autowireResolver = new AutowireResolver($typeResolver);
 
 $service = $autowireResolver->getObject(AutowireService::class);
 ```
