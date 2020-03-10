@@ -56,12 +56,16 @@ class AutowireResolver implements AutowireResolverInterface
         $arguments  = [];
 
         foreach ($parameters as $parameter) {
-            $type = $parameter->getType();
-
-            if ($type instanceof \ReflectionNamedType) {
-                $arguments[] = $this->typeResolver->getServiceByType($type->getName());
+            if (!$parameter->isOptional()) {
+                $type = $parameter->getType();
+                if ($type instanceof \ReflectionNamedType) {
+                    $arguments[] = $this->typeResolver->getServiceByType($type->getName());
+                } else {
+                    $arguments[] = $this->typeResolver->getServiceByType($parameter->getName());
+                }
             } else {
-                $arguments[] = $this->typeResolver->getServiceByType($parameter->getName());
+                // if the parameter is optional we simply pass the default value
+                $arguments[] = $parameter->getDefaultValue();
             }
         }
 
