@@ -120,6 +120,28 @@ To tag you service you need to add the `@Tag` annotation to your service
 definition method. Then it is possible to use the tag resolver to receive all
 services which have added a specific tag.
 
+### Compiler
+
+If you have created a large container it is possible to compile this container
+into an optimized class which improves the performance. 
+
+```php
+
+use Doctrine\Common\Annotations\SimpleAnnotationReader;
+use PSX\Dependency\Compiler\PhpCompiler;
+use PSX\Dependency\Tests\Playground\MyContainer;
+
+$reader = new SimpleAnnotationReader();
+$reader->addNamespace('PSX\Dependency\Annotation');
+
+$compiler = new PhpCompiler($reader, 'Container', __NAMESPACE__);
+$container = new MyContainer();
+
+// contains the compiled DI container
+$code = $compiler->compile($container);
+
+```
+
 ### Object builder
 
 The object builder resolves properties with an `@Inject` annotation and tries
