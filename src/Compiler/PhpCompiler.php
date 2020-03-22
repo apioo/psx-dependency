@@ -75,7 +75,7 @@ class PhpCompiler implements CompilerInterface
         }
 
         $methods = $container->getServiceMethods();
-        $result  = []; 
+        $result  = [];
 
         $inspector = new ContainerInspector($container, $this->reader);
 
@@ -108,9 +108,21 @@ class PhpCompiler implements CompilerInterface
         $nodeTraverser->addVisitor(new PhpParser\NodeVisitor\NameResolver());
         $ast = $nodeTraverser->traverse($ast);
 
-        $astNamespace = $this->findFirstOfType($ast, Namespace_::class);
-        $astClass = $this->findFirstOfType($astNamespace->stmts, Class_::class);
-        $astMethod = $this->findMethod($astClass, $method->getName());
+        $astNamespace = $this->findFirstOfType($ast, PhpParser\Node\Stmt\Namespace_::class);
+        if ($astNamespace === null) {
+            throw new \RuntimeException('Found no namespace');
+        }
+
+        $astClass = $this->findFirstOfType($astNamespace->stmts, PhpParser\Node\Stmt\Class_::class);
+        if ($astClass === null) {
+            $astClass = $this->findFirstOfType($astNamespace->stmts, PhpParser\Node\Stmt\Trait_::class);
+        }
+
+        if ($astClass === null) {
+            throw new \RuntimeException('Found no class');
+        }
+
+        $astMethod = $this->findMethod($astClass->stmts, $method->getName());
 
         $code = (new PrettyPrinter\Standard())->prettyPrintFile([$astMethod]);
         return $this->trimOpeningTag($code);
@@ -124,13 +136,12 @@ class PhpCompiler implements CompilerInterface
             }
         }
 
-        throw new \RuntimeException('Found no class');
+        return null;
     }
 
-    private function findMethod(Class_ $class, string $methodName): ClassMethod
+    private function findMethod(array $stmts, string $methodName): ClassMethod
     {
-        $methods = $class->stmts;
-        foreach ($methods as $classMethod) {
+        foreach ($stmts as $classMethod) {
             if (!$classMethod instanceof ClassMethod) {
                 continue;
             }
