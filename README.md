@@ -12,12 +12,16 @@ at a class by adding i.e. a `getMyService` method.
 ### Container
 
 It is possible to extend the `Container` class. All `getXXX` methods are service 
-definitions which can be accessed if a new container is created.
+definitions which can be accessed through the `get` method.
 
 ```php
 <?php
 
-class MyContainer extends \PSX\Dependency\Container
+use PSX\Dependency\Container;
+use PSX\Dependency\Tests\Playground\FooService;
+use PSX\Dependency\Tests\Playground\BarService;
+
+class MyContainer extends Container
 {
     public function getFooService(): FooService
     {
@@ -42,6 +46,13 @@ The following example shows how you can use the autowiring feature:
 ```php
 <?php
 
+use Doctrine\Common\Annotations\SimpleAnnotationReader;
+use PSX\Dependency\Inspector\ContainerInspector;
+use PSX\Dependency\TypeResolver;
+use PSX\Dependency\AutowireResolver;
+use PSX\Dependency\Tests\Playground\MyContainer;
+use PSX\Dependency\Tests\Playground\AutowireService;
+
 $reader = new SimpleAnnotationReader();
 $reader->addNamespace('PSX\Dependency\Annotation');
 
@@ -58,6 +69,32 @@ class and tries to resolve each type based on the return type of the method
 definitions in the container. Please take a look at test cases to see a complete
 example.
 
+It is also possible to provide a factory resolver which allow to resolve i.e.
+repository classes:
+
+```php
+<?php
+
+use Psr\Container\ContainerInterface;
+use PSX\Dependency\TypeResolver;
+use PSX\Dependency\AutowireResolver;
+use PSX\Dependency\Tests\Playground\RepositoryInterface;
+use PSX\Dependency\Tests\Playground\MyRepository;
+
+$typeResolver = new TypeResolver(...);
+$autowireResolver = new AutowireResolver($typeResolver);
+
+$typeResolver->addFactoryResolver(RepositoryInterface::class, function (string $class, ContainerInterface $container): RepositoryInterface {
+    return $container->get('table_manager')->getRepository($class);
+});
+
+// this now allows to resolve classes which are not defined as service but are
+// resolved through the provided closure. Note the MyRepository class must
+// implement the RepositoryInterface interface
+$repository = $autowireResolver->getObject(MyRepository::class);
+
+```
+
 ### Tags
 
 The following example shows how to get services which are annotated by a
@@ -66,19 +103,23 @@ specific tag:
 ```php
 <?php
 
+use Doctrine\Common\Annotations\SimpleAnnotationReader;
+use PSX\Dependency\Inspector\ContainerInspector;
+use PSX\Dependency\TagResolver;
+use PSX\Dependency\Tests\Playground\MyContainer;
+
 $reader = new SimpleAnnotationReader();
 $reader->addNamespace('PSX\Dependency\Annotation');
 
 $container = new MyContainer();
 $inspector = new ContainerInspector($container, $reader);
-
 $tagResolver = new TagResolver($container, $inspector);
 
 $services = $tagResolver->getServicesByTag('my_tag');
 ```
 
 To tag you service you need to add the `@Tag` annotation to your service
-definition method. Then it is possible to use tag resolver to receive all
+definition method. Then it is possible to use the tag resolver to receive all
 services which have added a specific tag.
 
 ### Object builder
@@ -119,13 +160,19 @@ once.
 ```php
 <?php
 
+use Doctrine\Common\Annotations\SimpleAnnotationReader;
+use Doctrine\Common\Cache\ArrayCache;
+use PSX\Cache\Pool;
+use PSX\Dependency\ObjectBuilder;
+use PSX\Dependency\Tests\Playground\MyContainer;
+
 $container = new MyContainer();
-$reader = new \Doctrine\Common\Annotations\SimpleAnnotationReader();
+$reader = new SimpleAnnotationReader();
 $reader->addNamespace('PSX\Dependency\Annotation');
-$cache = new \PSX\Cache\Pool(new \Doctrine\Common\Cache\ArrayCache());
+$cache = new Pool(new ArrayCache());
 $debug = false;
 
-$builder = new \PSX\Dependency\ObjectBuilder(
+$builder = new ObjectBuilder(
     $container,
     $reader,
     $cache,
@@ -139,7 +186,10 @@ $controller = $builder->getObject(MyController::class);
 ### Factory
 
 It is also possible to set services on a container in the "Pimple" way. Through
-this you can easily extend or overwrite existing containers.
+this you can easily extend or overwrite existing containers. Note it is not
+possible to use theses services for autowiring. In general it is recommended
+to create a custom container and extend from the default container to add new
+services.
 
 ```php
 <?php
