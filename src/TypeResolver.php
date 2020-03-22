@@ -21,6 +21,7 @@
 namespace PSX\Dependency;
 
 use Psr\Container\ContainerInterface;
+use PSX\Sql\TableInterface;
 
 /**
  * TypeResolverInterface
@@ -46,10 +47,16 @@ class TypeResolver implements TypeResolverInterface
      */
     private $types;
 
+    /**
+     * @var array
+     */
+    private $resolvers;
+
     public function __construct(ContainerInterface $container, InspectorInterface $inspector)
     {
         $this->container = $container;
         $this->inspector = $inspector;
+        $this->resolvers = [];
     }
 
     /**
@@ -63,8 +70,33 @@ class TypeResolver implements TypeResolverInterface
 
         if (isset($this->types[$class])) {
             return $this->container->get($this->types[$class]);
+        } elseif ($resolver = $this->getResolverForClass($class)) {
+            return $resolver($class, $this->container);
         } else {
             return $this->container->get($class);
         }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function addFactoryResolver(string $interface, \Closure $resolver)
+    {
+        $this->resolvers[$interface] = $resolver;
+    }
+
+    /**
+     * @param string $class
+     * @return \Closure|null
+     */
+    private function getResolverForClass(string $class): ?\Closure
+    {
+        foreach ($this->resolvers as $interface => $resolver) {
+            if (in_array($interface, class_implements($class))) {
+                return $resolver;
+            }
+        }
+
+        return null;
     }
 }

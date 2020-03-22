@@ -37,4 +37,14 @@ interface TypeResolverInterface
      * @throws NotFoundException
      */
     public function getServiceByType(string $class);
+
+    /**
+     * Adds a factory resolver which allows to resolve classes by a factory.
+     * This provides a way to i.e. resolve repositories from a table manager.
+     * The closure receives the class name and the container
+     *
+     * @param string $interface
+     * @param \Closure $resolver
+     */
+    public function addFactoryResolver(string $interface, \Closure $resolver);
 }
