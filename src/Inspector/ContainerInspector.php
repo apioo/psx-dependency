@@ -119,6 +119,12 @@ class ContainerInspector implements InspectorInterface
         $container = new \ReflectionClass($this->container);
 
         foreach ($container->getMethods() as $method) {
+            if (!$method->isPublic()) {
+                // only public methods are exposed, protected methods are used
+                // for internal services
+                continue;
+            }
+
             if (!in_array($method->name, $reserved) && preg_match('/^get(.+)$/', $method->name, $match)) {
                 $name = Container::underscore($match[1]);
                 $services[$name] = $method;
