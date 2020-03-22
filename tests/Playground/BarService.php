@@ -18,18 +18,15 @@
  * limitations under the License.
  */
 
-namespace PSX\Dependency\Tests;
+namespace PSX\Dependency\Tests\Playground;
 
 /**
- * InvalidService
+ * BarService
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class InvalidService
+class BarService
 {
-    public function __construct($foo)
-    {
-    }
 }

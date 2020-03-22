@@ -22,12 +22,10 @@ namespace PSX\Dependency\Tests;
 
 use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
 use PSX\Dependency\Inspector\ContainerInspector;
-use PSX\Dependency\TagResolver;
-use PSX\Dependency\TagResolverInterface;
+use PSX\Dependency\Tests\Playground\RepositoryInterface;
 use PSX\Dependency\TypeResolver;
-use PSX\Dependency\TypeResolverInterface;
-use PSX\V8\Tests\Object\Foo;
 
 /**
  * TypeResolverTest
@@ -42,19 +40,35 @@ class TypeResolverTest extends TestCase
     {
         $typeResolver = $this->newTypeResolver();
 
-        $service = $typeResolver->getServiceByType(FooService::class);
-        $this->assertInstanceOf(FooService::class, $service);
+        $service = $typeResolver->getServiceByType(Playground\FooService::class);
+        $this->assertInstanceOf(Playground\FooService::class, $service);
 
-        $service = $typeResolver->getServiceByType(BarService::class);
-        $this->assertInstanceOf(BarService::class, $service);
+        $service = $typeResolver->getServiceByType(Playground\BarService::class);
+        $this->assertInstanceOf(Playground\BarService::class, $service);
     }
 
-    private function newTypeResolver(): TypeResolverInterface
+    public function testGetServiceByTypeFactoryResolver()
+    {
+        $typeResolver = $this->newTypeResolver();
+        
+        $typeResolver->addFactoryResolver(Playground\RepositoryInterface::class, function (string $class, ContainerInterface $container): Playground\RepositoryInterface {
+            $this->assertEquals(Playground\MyRepository::class, $class);
+
+            return $container->get('table_manager')->getRepository($class);
+        });
+
+        /** @var RepositoryInterface $service */
+        $service = $typeResolver->getServiceByType(Playground\MyRepository::class);
+        $this->assertInstanceOf(Playground\MyRepository::class, $service);
+        $this->assertEquals(Playground\MyRepository::class, $service->getClass());
+    }
+
+    private function newTypeResolver(): TypeResolver
     {
         $reader = new SimpleAnnotationReader();
         $reader->addNamespace('PSX\Dependency\Annotation');
 
-        $container = new MyContainer();
+        $container = new Playground\MyContainer();
         $inspector = new ContainerInspector($container, $reader);
 
         return new TypeResolver($container, $inspector);

@@ -41,22 +41,22 @@ class AutowireResolverTest extends TestCase
     {
         $autowireResolver = $this->newAutowireResolver();
 
-        /** @var AutowireService $service */
-        $service = $autowireResolver->getObject(AutowireService::class);
+        /** @var Playground\AutowireService $service */
+        $service = $autowireResolver->getObject(Playground\AutowireService::class);
 
-        $this->assertInstanceOf(AutowireService::class, $service);
-        $this->assertInstanceOf(FooService::class, $service->getFoo());
-        $this->assertInstanceOf(BarService::class, $service->getBar());
+        $this->assertInstanceOf(Playground\AutowireService::class, $service);
+        $this->assertInstanceOf(Playground\FooService::class, $service->getFoo());
+        $this->assertInstanceOf(Playground\BarService::class, $service->getBar());
     }
 
     public function testGetObjectNoConstructor()
     {
         $autowireResolver = $this->newAutowireResolver();
 
-        /** @var BarService $service */
-        $service = $autowireResolver->getObject(BarService::class);
+        /** @var Playground\BarService $service */
+        $service = $autowireResolver->getObject(Playground\BarService::class);
 
-        $this->assertInstanceOf(BarService::class, $service);
+        $this->assertInstanceOf(Playground\BarService::class, $service);
     }
 
     private function newAutowireResolver(): AutowireResolverInterface
@@ -64,7 +64,7 @@ class AutowireResolverTest extends TestCase
         $reader = new SimpleAnnotationReader();
         $reader->addNamespace('PSX\Dependency\Annotation');
 
-        $container = new MyContainer();
+        $container = new Playground\MyContainer();
         $inspector = new ContainerInspector($container, $reader);
         $typeResolver = new TypeResolver($container, $inspector);
 

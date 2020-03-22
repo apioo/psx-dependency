@@ -18,42 +18,29 @@
  * limitations under the License.
  */
 
-namespace PSX\Dependency\Tests;
-
-use Doctrine\Common\Annotations\SimpleAnnotationReader;
-use PHPUnit\Framework\TestCase;
-use PSX\Dependency\Inspector\ContainerInspector;
-use PSX\Dependency\TagResolver;
-use PSX\Dependency\TagResolverInterface;
+namespace PSX\Dependency\Tests\Playground;
 
 /**
- * TagResolverTest
+ * Repository
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class TagResolverTest extends TestCase
+class MyRepository implements RepositoryInterface
 {
-    public function testGetServicesByTag()
+    /**
+     * @var string
+     */
+    private $class;
+
+    public function __construct(string $class)
     {
-        $tagResolver = $this->newTagResolver();
-
-        $services = $tagResolver->getServicesByTag('my_tag');
-
-        foreach ($services as $service) {
-            $this->assertInstanceOf(Playground\BarService::class, $service);
-        }
+        $this->class = $class;
     }
 
-    private function newTagResolver(): TagResolverInterface
+    public function getClass(): string
     {
-        $reader = new SimpleAnnotationReader();
-        $reader->addNamespace('PSX\Dependency\Annotation');
-
-        $container = new Playground\MyContainer();
-        $inspector = new ContainerInspector($container, $reader);
-
-        return new TagResolver($container, $inspector);
+        return $this->class;
     }
 }

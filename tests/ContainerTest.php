@@ -66,7 +66,7 @@ class ContainerTest extends TestCase
 
     public function testSetMethod()
     {
-        $sc = new ProjectServiceContainer();
+        $sc = new Playground\ProjectServiceContainer();
 
         $this->assertTrue($sc->has('bar'));
         $this->assertInstanceOf(\stdClass::class, $sc->get('bar'));
@@ -81,7 +81,7 @@ class ContainerTest extends TestCase
 
     public function testGet()
     {
-        $sc = new ProjectServiceContainer();
+        $sc = new Playground\ProjectServiceContainer();
         $sc->set('foo', $foo = new \stdClass());
         $this->assertEquals($foo, $sc->get('foo'), '->get() returns the service for the given id');
         $this->assertEquals($sc->__bar, $sc->get('bar'), '->get() returns the service for the given id');
@@ -126,7 +126,7 @@ class ContainerTest extends TestCase
 
     public function testHas()
     {
-        $sc = new ProjectServiceContainer();
+        $sc = new Playground\ProjectServiceContainer();
         $sc->set('foo', new \stdClass());
 
         $this->assertFalse($sc->has('foo1'), '->has() returns false if the service does not exist');
@@ -138,7 +138,7 @@ class ContainerTest extends TestCase
 
     public function testInitialized()
     {
-        $sc = new ProjectServiceContainer();
+        $sc = new Playground\ProjectServiceContainer();
 
         $this->assertFalse($sc->initialized('foo_bar'));
 

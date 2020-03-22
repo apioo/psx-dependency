@@ -44,9 +44,9 @@ class ObjectBuilderTest extends TestCase
         $container->set('foo_bar', new \DateTime());
 
         $builder = $this->newObjectBuilder($container);
-        $object  = $builder->getObject(FooService::class);
+        $object  = $builder->getObject(Playground\FooService::class);
 
-        $this->assertInstanceof(FooService::class, $object);
+        $this->assertInstanceof(Playground\FooService::class, $object);
         $this->assertInstanceof(\stdClass::class, $object->getFoo());
         $this->assertInstanceof(\DateTime::class, $object->getBar());
         $this->assertNull($object->getProperty());
@@ -60,7 +60,7 @@ class ObjectBuilderTest extends TestCase
         $container = new Container();
         
         $builder = $this->newObjectBuilder($container);
-        $builder->getObject(FooService::class);
+        $builder->getObject(Playground\FooService::class);
     }
 
     /**
@@ -81,9 +81,9 @@ class ObjectBuilderTest extends TestCase
         $container->set('foo_bar', new \stdClass());
 
         $builder = $this->newObjectBuilder($container);
-        $object  = $builder->getObject(FooService::class, array(), FooService::class);
+        $object  = $builder->getObject(Playground\FooService::class, array(), Playground\FooService::class);
 
-        $this->assertInstanceof(FooService::class, $object);
+        $this->assertInstanceof(Playground\FooService::class, $object);
     }
 
     /**
@@ -96,7 +96,7 @@ class ObjectBuilderTest extends TestCase
         $container->set('foo_bar', new \stdClass());
 
         $builder = $this->newObjectBuilder($container);
-        $builder->getObject(FooService::class, array(), 'PSX\Framework\Tests\Dependency\BarService');
+        $builder->getObject(Playground\FooService::class, array(), 'PSX\Framework\Tests\Dependency\BarService');
     }
 
     public function testGetObjectConstructorArguments()
@@ -106,9 +106,9 @@ class ObjectBuilderTest extends TestCase
         $container->set('foo_bar', new \stdClass());
 
         $builder = $this->newObjectBuilder($container);
-        $object  = $builder->getObject(FooService::class, array('foo'), FooService::class);
+        $object  = $builder->getObject(Playground\FooService::class, array('foo'), Playground\FooService::class);
 
-        $this->assertInstanceof(FooService::class, $object);
+        $this->assertInstanceof(Playground\FooService::class, $object);
         $this->assertEquals('foo', $object->getProperty());
     }
 
@@ -130,19 +130,19 @@ class ObjectBuilderTest extends TestCase
 
         $cache   = new Pool(new ArrayCache());
         $builder = $this->newObjectBuilder($container, $cache, false);
-        $object  = $builder->getObject(FooService::class);
+        $object  = $builder->getObject(Playground\FooService::class);
 
-        $item = $cache->getItem(ObjectBuilder::class . FooService::class);
+        $item = $cache->getItem(ObjectBuilder::class . Playground\FooService::class);
 
-        $this->assertInstanceof(FooService::class, $object);
+        $this->assertInstanceof(Playground\FooService::class, $object);
         $this->assertTrue($item->isHit());
         $this->assertEquals(['foo' => 'foo', 'bar' => 'foo_bar'], $item->get());
 
-        $item = $cache->getItem(ObjectBuilder::class . FooService::class);
+        $item = $cache->getItem(ObjectBuilder::class . Playground\FooService::class);
 
-        $object = $builder->getObject(FooService::class);
+        $object = $builder->getObject(Playground\FooService::class);
 
-        $this->assertInstanceof(FooService::class, $object);
+        $this->assertInstanceof(Playground\FooService::class, $object);
         $this->assertTrue($item->isHit());
         $this->assertEquals(['foo' => 'foo', 'bar' => 'foo_bar'], $item->get());
     }

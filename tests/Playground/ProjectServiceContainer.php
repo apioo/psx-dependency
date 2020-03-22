@@ -18,46 +18,44 @@
  * limitations under the License.
  */
 
-namespace PSX\Dependency\Tests;
+namespace PSX\Dependency\Tests\Playground;
+
+use PSX\Dependency\Container;
 
 /**
- * FooService
+ * ProjectServiceContainer
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class FooService
+class ProjectServiceContainer extends Container
 {
+    public $__bar, $__foo_bar;
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->__bar = new \stdClass();
+        $this->__foo_bar = new \stdClass();
+    }
+
+    protected function getBar()
+    {
+        return $this->__bar;
+    }
+
     /**
-     * @Inject
+     * @return \stdClass - some comment
      */
-    protected $foo;
-
-    /**
-     * @Inject("foo_bar")
-     */
-    protected $bar;
-
-    protected $property;
-
-    public function __construct($property = null)
+    protected function getFooBar()
     {
-        $this->property = $property;
+        return $this->__foo_bar;
     }
 
-    public function getFoo()
+    protected function getScalar()
     {
-        return $this->foo;
-    }
-
-    public function getBar()
-    {
-        return $this->bar;
-    }
-
-    public function getProperty()
-    {
-        return $this->property;
+        return array('foo', 'bar');
     }
 }

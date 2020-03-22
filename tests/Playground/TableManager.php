@@ -18,15 +18,19 @@
  * limitations under the License.
  */
 
-namespace PSX\Dependency\Tests;
+namespace PSX\Dependency\Tests\Playground;
 
 /**
- * BarService
+ * TableManager
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class BarService
+class TableManager
 {
+    public function getRepository(string $class): RepositoryInterface
+    {
+        return new MyRepository($class);
+    }
 }

@@ -18,7 +18,7 @@
  * limitations under the License.
  */
 
-namespace PSX\Dependency\Tests;
+namespace PSX\Dependency\Tests\Playground;
 
 use PSX\Dependency\Container;
 
@@ -32,7 +32,7 @@ use PSX\Dependency\Container;
 class MyContainer extends Container
 {
     /**
-     * @return \PSX\Dependency\Tests\FooService
+     * @return \PSX\Dependency\Tests\Playground\FooService
      */
     public function getFooService()
     {
@@ -46,5 +46,9 @@ class MyContainer extends Container
     {
         return new BarService();
     }
-}
 
+    public function getTableManager(): TableManager
+    {
+        return new TableManager();
+    }
+}

@@ -18,46 +18,46 @@
  * limitations under the License.
  */
 
-namespace PSX\Dependency\Tests;
+namespace PSX\Dependency\Tests\Playground;
 
 /**
- * AutowireService
+ * FooService
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class AutowireService
+class FooService
 {
     /**
-     * @var FooService
+     * @Inject
      */
-    private $foo;
+    protected $foo;
 
     /**
-     * @var BarService
+     * @Inject("foo_bar")
      */
-    private $bar;
+    protected $bar;
 
-    public function __construct(FooService $foo, BarService $bar)
+    protected $property;
+
+    public function __construct($property = null)
     {
-        $this->foo = $foo;
-        $this->bar = $bar;
+        $this->property = $property;
     }
 
-    /**
-     * @return FooService
-     */
-    public function getFoo(): FooService
+    public function getFoo()
     {
         return $this->foo;
     }
 
-    /**
-     * @return BarService
-     */
-    public function getBar(): BarService
+    public function getBar()
     {
         return $this->bar;
+    }
+
+    public function getProperty()
+    {
+        return $this->property;
     }
 }

@@ -35,11 +35,12 @@ abstract class InspectorTestCase extends TestCase
 {
     public function testGetServiceIds()
     {
-        $inspector = $this->newInspector(new MyContainer());
+        $inspector = $this->newInspector(new Playground\MyContainer());
 
         $expect = [
             'bar_service',
-            'foo_service'
+            'foo_service',
+            'table_manager',
         ];
 
         $this->assertEquals($expect, $inspector->getServiceIds());
@@ -47,11 +48,12 @@ abstract class InspectorTestCase extends TestCase
 
     public function testGetTypedServiceIds()
     {
-        $inspector = $this->newInspector(new MyContainer());
+        $inspector = $this->newInspector(new Playground\MyContainer());
 
         $expect = [
-            'PSX\Dependency\Tests\FooService' => 'foo_service',
-            'PSX\Dependency\Tests\BarService' => 'bar_service'
+            Playground\FooService::class => 'foo_service',
+            Playground\BarService::class => 'bar_service',
+            Playground\TableManager::class => 'table_manager',
         ];
 
         $this->assertEquals($expect, $inspector->getTypedServiceIds());
@@ -59,7 +61,7 @@ abstract class InspectorTestCase extends TestCase
 
     public function testGetTaggedServiceIds()
     {
-        $inspector = $this->newInspector(new MyContainer());
+        $inspector = $this->newInspector(new Playground\MyContainer());
 
         $expect = [
             'my_tag' => ['bar_service']

@@ -18,44 +18,18 @@
  * limitations under the License.
  */
 
-namespace PSX\Dependency\Tests;
-
-use PSX\Dependency\Container;
+namespace PSX\Dependency\Tests\Playground;
 
 /**
- * ProjectServiceContainer
+ * InvalidService
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class ProjectServiceContainer extends Container
+class InvalidService
 {
-    public $__bar, $__foo_bar;
-
-    public function __construct()
+    public function __construct($foo)
     {
-        parent::__construct();
-
-        $this->__bar = new \stdClass();
-        $this->__foo_bar = new \stdClass();
-    }
-
-    protected function getBar()
-    {
-        return $this->__bar;
-    }
-
-    /**
-     * @return \stdClass - some comment
-     */
-    protected function getFooBar()
-    {
-        return $this->__foo_bar;
-    }
-
-    protected function getScalar()
-    {
-        return array('foo', 'bar');
     }
 }
