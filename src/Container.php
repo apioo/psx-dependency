@@ -155,7 +155,7 @@ class Container implements ContainerInterface, IntrospectableContainerInterface
     public function getServiceMethods(): array
     {
         $services  = [];
-        $reserved  = ['get', 'getParameter', 'getServiceMethods'];
+        $reserved  = ['get', 'getParameter', 'getServiceMethods', 'getServiceIds', 'getTypedServiceIds', 'getTaggedServiceIds'];
         $container = new \ReflectionClass(get_class($this));
 
         foreach ($container->getMethods() as $method) {
