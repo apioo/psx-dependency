@@ -25,7 +25,6 @@ use Psr\Container\ContainerInterface;
 use PSX\Dependency\Annotation\Tag;
 use PSX\Dependency\Container;
 use PSX\Dependency\InspectorInterface;
-use PSX\Dependency\IntrospectableContainerInterface;
 
 /**
  * Service which inspects the DI container and returns additional information

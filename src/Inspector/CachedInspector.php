@@ -20,7 +20,6 @@
 
 namespace PSX\Dependency\Inspector;
 
-use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
 use PSX\Dependency\InspectorInterface;
 
