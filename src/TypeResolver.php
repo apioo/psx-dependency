@@ -21,7 +21,6 @@
 namespace PSX\Dependency;
 
 use Psr\Container\ContainerInterface;
-use PSX\Sql\TableInterface;
 
 /**
  * TypeResolverInterface
