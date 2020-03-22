@@ -90,8 +90,8 @@ class PhpCompiler implements CompilerInterface
         $class = new \ReflectionClass(get_class($container));
 
         return $this->compileContainer(
-            $class->getNamespaceName(),
-            $class->getShortName(),
+            $this->namespace ?? $class->getNamespaceName(),
+            $this->class ?? $class->getShortName(),
             $result,
             $ids,
             $types,
@@ -154,9 +154,6 @@ class PhpCompiler implements CompilerInterface
         $serviceIds = var_export($serviceIds, true);
         $types = var_export($types, true);
         $tags = var_export($tags, true);
-
-        $namespace = $this->namespace ?? $namespace;
-        $class = $this->class ?? $class;
 
         if (!empty($namespace)) {
             $namespace = 'namespace ' . $namespace . ';';
