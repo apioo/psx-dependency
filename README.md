@@ -79,7 +79,6 @@ use Psr\Container\ContainerInterface;
 use PSX\Dependency\TypeResolver;
 use PSX\Dependency\AutowireResolver;
 use PSX\Dependency\Tests\Playground\RepositoryInterface;
-use PSX\Dependency\Tests\Playground\MyRepository;
 
 $typeResolver = new TypeResolver(...);
 $autowireResolver = new AutowireResolver($typeResolver);
@@ -88,10 +87,9 @@ $typeResolver->addFactoryResolver(RepositoryInterface::class, function (string $
     return $container->get('table_manager')->getRepository($class);
 });
 
-// this now allows to resolve classes which are not defined as service but are
-// resolved through the provided closure. Note the MyRepository class must
-// implement the RepositoryInterface interface
-$repository = $autowireResolver->getObject(MyRepository::class);
+// this now allows to use the MyRepository class as a type-hint at a service and
+// the autowire resolver injects the fitting service through the defined resolver
+$repository = $autowireResolver->getObject(MyService::class);
 
 ```
 
