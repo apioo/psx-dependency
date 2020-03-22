@@ -171,18 +171,21 @@ Please do not modify this file.
 {$namespace}
 class {$class} extends \PSX\Dependency\Container implements \PSX\Dependency\InspectorInterface
 {
+private static \$SERVICE_IDS = {$serviceIds};
+private static \$TYPED_SERVICE_IDS = {$types};
+private static \$TAG_SERVICE_IDS = {$tags};
 {$methods}
 public function getServiceIds(): array
 {
-    return {$serviceIds};
+    return self::\$SERVICE_IDS;
 }
 public function getTypedServiceIds(): array
 {
-    return {$types};
+    return self::\$TYPED_SERVICE_IDS;
 }
 public function getTaggedServiceIds(): array
 {
-    return {$tags};
+    return self::\$TAG_SERVICE_IDS;
 }
 }
 
