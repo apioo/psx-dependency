@@ -29,7 +29,7 @@ use Psr\Container\ContainerInterface;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class Container implements ContainerInterface, IntrospectableContainerInterface
+class Container implements ContainerInterface
 {
     /**
      * @var array
@@ -147,25 +147,6 @@ class Container implements ContainerInterface, IntrospectableContainerInterface
         $name = strtolower($name);
 
         return isset($this->parameters[$name]);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getServiceMethods(): array
-    {
-        $services  = [];
-        $reserved  = ['get', 'getParameter', 'getServiceMethods', 'getServiceIds', 'getTypedServiceIds', 'getTaggedServiceIds'];
-        $container = new \ReflectionClass(get_class($this));
-
-        foreach ($container->getMethods() as $method) {
-            if (!in_array($method->name, $reserved) && preg_match('/^get(.+)$/', $method->name, $match)) {
-                $name = Container::underscore($match[1]);
-                $services[$name] = $method;
-            }
-        }
-
-        return $services;
     }
 
     /**

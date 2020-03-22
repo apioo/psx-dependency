@@ -23,6 +23,7 @@ namespace PSX\Dependency\Inspector;
 use Doctrine\Common\Annotations\Reader;
 use Psr\Container\ContainerInterface;
 use PSX\Dependency\Annotation\Tag;
+use PSX\Dependency\Container;
 use PSX\Dependency\InspectorInterface;
 use PSX\Dependency\IntrospectableContainerInterface;
 
@@ -37,7 +38,7 @@ use PSX\Dependency\IntrospectableContainerInterface;
 class ContainerInspector implements InspectorInterface
 {
     /**
-     * @var \Psr\Container\ContainerInterface|\PSX\Dependency\IntrospectableContainerInterface
+     * @var \Psr\Container\ContainerInterface
      */
     protected $container;
 
@@ -52,10 +53,6 @@ class ContainerInspector implements InspectorInterface
      */
     public function __construct(ContainerInterface $container, Reader $reader)
     {
-        if (!$container instanceof IntrospectableContainerInterface) {
-            throw new \RuntimeException('Provided container is not introspectable, your container must implement ' . IntrospectableContainerInterface::class);
-        }
-
         $this->container = $container;
         $this->reader    = $reader;
     }
@@ -67,7 +64,7 @@ class ContainerInspector implements InspectorInterface
             return $this->container->getServiceIds();
         }
 
-        $methods  = $this->container->getServiceMethods();
+        $methods  = $this->getServiceMethods();
         $services = array_keys($methods);
 
         sort($services);
@@ -82,7 +79,7 @@ class ContainerInspector implements InspectorInterface
             return $this->container->getTypedServiceIds();
         }
 
-        $methods = $this->container->getServiceMethods();
+        $methods = $this->getServiceMethods();
         $types   = [];
 
         foreach ($methods as $name => $method) {
@@ -114,7 +111,7 @@ class ContainerInspector implements InspectorInterface
             return $this->container->getTaggedServiceIds();
         }
 
-        $methods = $this->container->getServiceMethods();
+        $methods = $this->getServiceMethods();
         $tags    = [];
 
         foreach ($methods as $name => $method) {
@@ -129,6 +126,22 @@ class ContainerInspector implements InspectorInterface
         }
 
         return $tags;
+    }
+
+    public function getServiceMethods(): array
+    {
+        $services  = [];
+        $reserved  = ['get', 'getParameter', 'getServiceMethods', 'getServiceIds', 'getTypedServiceIds', 'getTaggedServiceIds'];
+        $container = new \ReflectionClass(get_class($this->container));
+
+        foreach ($container->getMethods() as $method) {
+            if (!in_array($method->name, $reserved) && preg_match('/^get(.+)$/', $method->name, $match)) {
+                $name = Container::underscore($match[1]);
+                $services[$name] = $method;
+            }
+        }
+
+        return $services;
     }
 
     /**
