@@ -20,6 +20,7 @@
 
 namespace PSX\Dependency\Tests;
 
+use Psr\Container\NotFoundExceptionInterface;
 use PHPUnit\Framework\TestCase;
 use PSX\Dependency\Container;
 
@@ -92,12 +93,11 @@ class ContainerTest extends TestCase
         $this->assertEquals($bar, $sc->get('bar'), '->get() prefers to return a service defined with set() than one defined with a getXXXMethod()');
     }
 
-    /**
-     * @expectedException \Psr\Container\NotFoundExceptionInterface
-     */
     public function testGetThrowServiceNotFoundException()
     {
         $sc = new Container();
+        
+        $this->expectException(NotFoundExceptionInterface::class);
         $sc->get('foo');
     }
 
@@ -115,12 +115,11 @@ class ContainerTest extends TestCase
         $this->assertEquals('baz1', $sc->getParameter('FOO'), '->getParameter() converts the key to lowercase');
     }
 
-    /**
-     * @expectedException \PSX\Dependency\NotFoundException
-     */
     public function testInvalidGetParameter()
     {
         $sc = new Container();
+        
+        $this->expectException(NotFoundExceptionInterface::class);
         $sc->getParameter('foobar');
     }
 

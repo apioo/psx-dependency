@@ -20,6 +20,9 @@
 
 namespace PSX\Dependency\Tests;
 
+use InvalidArgumentException;
+use ReflectionException;
+use RuntimeException;
 use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use Doctrine\Common\Cache\ArrayCache;
 use PHPUnit\Framework\TestCase;
@@ -52,25 +55,23 @@ class ObjectBuilderTest extends TestCase
         $this->assertNull($object->getProperty());
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testGetObjectInjectUnknownService()
     {
         $container = new Container();
         
         $builder = $this->newObjectBuilder($container);
+        
+        $this->expectException(RuntimeException::class);
         $builder->getObject(Playground\FooService::class);
     }
 
-    /**
-     * @expectedException \ReflectionException
-     */
     public function testGetObjectUnknownClass()
     {
         $container = new Container();
         
         $builder = $this->newObjectBuilder($container);
+
+        $this->expectException(ReflectionException::class);
         $builder->getObject('PSX\Framework\Tests\Dependency\BarService');
     }
 
@@ -86,9 +87,6 @@ class ObjectBuilderTest extends TestCase
         $this->assertInstanceof(Playground\FooService::class, $object);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testGetObjectInstanceOfInvalid()
     {
         $container = new Container();
@@ -96,6 +94,8 @@ class ObjectBuilderTest extends TestCase
         $container->set('foo_bar', new \stdClass());
 
         $builder = $this->newObjectBuilder($container);
+
+        $this->expectException(InvalidArgumentException::class);
         $builder->getObject(Playground\FooService::class, array(), 'PSX\Framework\Tests\Dependency\BarService');
     }
 
