@@ -94,7 +94,7 @@ class Container implements ContainerInterface
      * @param string $name
      * @return boolean
      */
-    public function has($name)
+    public function has($name): bool
     {
         $name = self::normalizeName($name);
 
