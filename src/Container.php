@@ -54,12 +54,12 @@ class Container implements ContainerInterface
     }
 
     /**
-     * @param string $name
+     * @param string $id
      * @param mixed $object
      */
-    public function set($name, $object)
+    public function set($id, $object)
     {
-        $name = self::normalizeName($name);
+        $name = self::normalizeName($id);
 
         if ($object instanceof \Closure) {
             $this->factories[$name] = $object;
@@ -69,13 +69,13 @@ class Container implements ContainerInterface
     }
 
     /**
-     * @param string $name
+     * @param string $id
      * @return mixed
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws NotFoundException
      */
-    public function get($name)
+    public function get($id)
     {
-        $name = self::normalizeName($name);
+        $name = self::normalizeName($id);
 
         if (!isset($this->services[$name])) {
             if (isset($this->factories[$name])) {
@@ -91,12 +91,12 @@ class Container implements ContainerInterface
     }
 
     /**
-     * @param string $name
+     * @param string $id
      * @return boolean
      */
-    public function has($name)
+    public function has($id)
     {
-        $name = self::normalizeName($name);
+        $name = self::normalizeName($id);
 
         return isset($this->services[$name]) || isset($this->factories[$name]) || method_exists($this, 'get' . $name);
     }

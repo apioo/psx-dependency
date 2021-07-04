@@ -49,7 +49,7 @@ class AutowireResolver implements AutowireResolverInterface
 
         if (!$constructor instanceof \ReflectionMethod) {
             // in case there is no constructor
-            return $reflection->newInstanceArgs();
+            return $reflection->newInstance();
         }
 
         $parameters = $constructor->getParameters();
