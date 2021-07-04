@@ -130,16 +130,39 @@ class ObjectBuilder implements ObjectBuilderInterface
 
         foreach ($properties as $property) {
             $inject = $this->reader->getPropertyAnnotation($property, '\\PSX\\Dependency\\Annotation\\Inject');
-            if ($inject instanceof Inject) {
-                $service = $inject->getService();
-                if (empty($service)) {
-                    $service = $property->getName();
-                }
-
-                $result[$property->getName()] = $service;
+            if (!$inject instanceof Inject) {
+                continue;
             }
+
+            $service = $inject->getService();
+            if (!empty($service)) {
+                $result[$property->getName()] = $service;
+                continue;
+            }
+
+            $service = $this->getPropertyType($property);
+            if (!empty($service)) {
+                $result[$property->getName()] = $service;
+                continue;
+            }
+
+            $result[$property->getName()] = $property->getName();
         }
 
         return $result;
+    }
+
+    private function getPropertyType(\ReflectionProperty $property): ?string
+    {
+        if (!method_exists($property, 'getType')) {
+            return null;
+        }
+
+        $type = $property->getType();
+        if ($type instanceof \ReflectionNamedType) {
+            return $type->getName();
+        }
+
+        return null;
     }
 }
