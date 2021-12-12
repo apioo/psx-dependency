@@ -21,7 +21,6 @@
 namespace PSX\Dependency;
 
 use InvalidArgumentException;
-use JetBrains\PhpStorm\Pure;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Container\ContainerInterface;
 use PSX\Dependency\Attribute\Inject;
@@ -99,7 +98,6 @@ class ObjectBuilder implements ObjectBuilderInterface
         return $object;
     }
 
-    #[Pure]
     private function getProperties(ReflectionClass $class): array
     {
         $properties = $class->getProperties();
@@ -128,7 +126,6 @@ class ObjectBuilder implements ObjectBuilderInterface
         return $result;
     }
 
-    #[Pure]
     private function getPropertyType(\ReflectionProperty $property): ?string
     {
         $type = $property->getType();
@@ -139,7 +136,6 @@ class ObjectBuilder implements ObjectBuilderInterface
         return null;
     }
 
-    #[Pure]
     private function getServiceId(\ReflectionProperty $property): ?string
     {
         $attributes = $property->getAttributes(Inject::class);

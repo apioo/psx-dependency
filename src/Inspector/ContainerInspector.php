@@ -20,7 +20,6 @@
 
 namespace PSX\Dependency\Inspector;
 
-use JetBrains\PhpStorm\Pure;
 use Psr\Container\ContainerInterface;
 use PSX\Dependency\Attribute\Tag;
 use PSX\Dependency\Container;
@@ -135,7 +134,6 @@ class ContainerInspector implements InspectorInterface
         return $services;
     }
 
-    #[Pure]
     private function getTag(\ReflectionMethod $method): ?string
     {
         $attributes = $method->getAttributes(Tag::class);
@@ -146,7 +144,6 @@ class ContainerInspector implements InspectorInterface
         return null;
     }
 
-    #[Pure]
     private function getReturnTypeForMethod(\ReflectionMethod $method): ?string
     {
         $returnType = $method->getReturnType();
