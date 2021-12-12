@@ -20,16 +20,12 @@
 
 namespace PSX\Dependency\Tests;
 
-use Doctrine\Common\Annotations\SimpleAnnotationReader;
-use Doctrine\Common\Cache\ArrayCache;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
-use PSX\Cache\Pool;
 use PSX\Dependency\Container;
 use PSX\Dependency\Exception\InvalidConfigurationException;
 use PSX\Dependency\ObjectBuilder;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
-use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 
 /**
  * ObjectBuilderTest

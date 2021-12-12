@@ -20,7 +20,6 @@
 
 namespace PSX\Dependency\Tests;
 
-use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use PHPUnit\Framework\TestCase;
 use PSX\Dependency\Inspector\ContainerInspector;
 use PSX\Dependency\TagResolver;

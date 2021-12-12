@@ -20,13 +20,7 @@
 
 namespace PSX\Dependency\Tests\Inspector;
 
-use Doctrine\Common\Annotations\SimpleAnnotationReader;
-use Doctrine\Common\Cache\ArrayCache;
-use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
-use PSX\Cache\Pool;
-use PSX\Dependency\Container;
-use PSX\Dependency\Inspector\CachedInspector;
 use PSX\Dependency\Inspector\ContainerInspector;
 use PSX\Dependency\InspectorInterface;
 use PSX\Dependency\Tests\InspectorTestCase;

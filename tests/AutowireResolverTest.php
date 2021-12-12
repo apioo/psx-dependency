@@ -20,12 +20,10 @@
 
 namespace PSX\Dependency\Tests;
 
-use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use PHPUnit\Framework\TestCase;
 use PSX\Dependency\AutowireResolver;
 use PSX\Dependency\AutowireResolverInterface;
 use PSX\Dependency\Inspector\ContainerInspector;
-use PSX\Dependency\TagResolver;
 use PSX\Dependency\TypeResolver;
 
 /**

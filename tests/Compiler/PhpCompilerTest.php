@@ -20,7 +20,6 @@
 
 namespace PSX\Dependency\Tests\Compiler;
 
-use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use PHPUnit\Framework\TestCase;
 use PSX\Dependency\Compiler\PhpCompiler;
 use PSX\Dependency\CompilerInterface;
