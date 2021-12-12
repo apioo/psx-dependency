@@ -46,7 +46,6 @@ The following example shows how you can use the autowiring feature:
 ```php
 <?php
 
-use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use PSX\Dependency\Inspector\ContainerInspector;
 use PSX\Dependency\TypeResolver;
 use PSX\Dependency\AutowireResolver;
@@ -101,7 +100,6 @@ specific tag:
 ```php
 <?php
 
-use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use PSX\Dependency\Inspector\ContainerInspector;
 use PSX\Dependency\TagResolver;
 use PSX\Dependency\Tests\Playground\MyContainer;
@@ -127,7 +125,6 @@ into an optimized class which improves the performance.
 
 ```php
 
-use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use PSX\Dependency\Compiler\PhpCompiler;
 use PSX\Dependency\Tests\Playground\MyContainer;
 
@@ -173,23 +170,19 @@ class MyController
 
 ```
 
-The object builder needs a doctrine annotation reader and cache instance. All
-defined services are cached in production so that we only parse the annotations
-once.
+The object builder can use a cache instance to cache all defined service keys in production.
 
 ```php
 <?php
 
-use Doctrine\Common\Annotations\SimpleAnnotationReader;
-use Doctrine\Common\Cache\ArrayCache;
-use PSX\Cache\Pool;
 use PSX\Dependency\ObjectBuilder;
 use PSX\Dependency\Tests\Playground\MyContainer;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 $container = new MyContainer();
 $reader = new SimpleAnnotationReader();
 $reader->addNamespace('PSX\Dependency\Annotation');
-$cache = new Pool(new ArrayCache());
+$cache = new ArrayAdapter();
 $debug = false;
 
 $builder = new ObjectBuilder(
