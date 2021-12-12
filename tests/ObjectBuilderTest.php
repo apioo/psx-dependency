@@ -20,13 +20,12 @@
 
 namespace PSX\Dependency\Tests;
 
-use Doctrine\Common\Annotations\SimpleAnnotationReader;
-use Doctrine\Common\Cache\ArrayCache;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
-use PSX\Cache\Pool;
 use PSX\Dependency\Container;
+use PSX\Dependency\Exception\InvalidConfigurationException;
 use PSX\Dependency\ObjectBuilder;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 /**
  * ObjectBuilderTest
@@ -52,22 +51,20 @@ class ObjectBuilderTest extends TestCase
         $this->assertNull($object->getProperty());
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testGetObjectInjectUnknownService()
     {
+        $this->expectException(InvalidConfigurationException::class);
+
         $container = new Container();
         
         $builder = $this->newObjectBuilder($container);
         $builder->getObject(Playground\FooService::class);
     }
 
-    /**
-     * @expectedException \ReflectionException
-     */
     public function testGetObjectUnknownClass()
     {
+        $this->expectException(\ReflectionException::class);
+
         $container = new Container();
         
         $builder = $this->newObjectBuilder($container);
@@ -86,11 +83,10 @@ class ObjectBuilderTest extends TestCase
         $this->assertInstanceof(Playground\FooService::class, $object);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testGetObjectInstanceOfInvalid()
     {
+        $this->expectException(\InvalidArgumentException::class);
+
         $container = new Container();
         $container->set('foo', new \stdClass());
         $container->set('foo_bar', new \stdClass());
@@ -128,17 +124,17 @@ class ObjectBuilderTest extends TestCase
         $container->set('foo', new \stdClass());
         $container->set('foo_bar', new \stdClass());
 
-        $cache   = new Pool(new ArrayCache());
+        $cache   = new ArrayAdapter();
         $builder = $this->newObjectBuilder($container, $cache, false);
         $object  = $builder->getObject(Playground\FooService::class);
 
-        $item = $cache->getItem(ObjectBuilder::class . Playground\FooService::class);
+        $item = $cache->getItem(md5(ObjectBuilder::class . Playground\FooService::class));
 
         $this->assertInstanceof(Playground\FooService::class, $object);
         $this->assertTrue($item->isHit());
         $this->assertEquals(['foo' => 'foo', 'bar' => 'foo_bar'], $item->get());
 
-        $item = $cache->getItem(ObjectBuilder::class . Playground\FooService::class);
+        $item = $cache->getItem(md5(ObjectBuilder::class . Playground\FooService::class));
 
         $object = $builder->getObject(Playground\FooService::class);
 
@@ -149,13 +145,10 @@ class ObjectBuilderTest extends TestCase
 
     private function newObjectBuilder(ContainerInterface $container, $cache = null, $debug = true)
     {
-        $reader = new SimpleAnnotationReader();
-        $reader->addNamespace('PSX\Dependency\Annotation');
-
         if ($cache === null) {
-            $cache = new Pool(new ArrayCache());
+            $cache = new ArrayAdapter();
         }
 
-        return new ObjectBuilder($container, $reader, $cache, $debug);
+        return new ObjectBuilder($container, $cache, $debug);
     }
 }

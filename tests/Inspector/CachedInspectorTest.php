@@ -20,11 +20,12 @@
 
 namespace PSX\Dependency\Tests\Inspector;
 
-use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use Psr\Container\ContainerInterface;
+use PSX\Dependency\Inspector\CachedInspector;
 use PSX\Dependency\Inspector\ContainerInspector;
 use PSX\Dependency\InspectorInterface;
 use PSX\Dependency\Tests\InspectorTestCase;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 
 /**
  * ContainerInspectorTest
@@ -37,9 +38,10 @@ class ContainerInspectorTest extends InspectorTestCase
 {
     protected function newInspector(ContainerInterface $container): InspectorInterface
     {
-        $reader = new SimpleAnnotationReader();
-        $reader->addNamespace('PSX\Dependency\Annotation');
+        $inspector = new ContainerInspector($container);
+        $cache     = new FilesystemAdapter();
 
-        return new ContainerInspector($container, $reader);
+        return new CachedInspector($inspector, $cache);
+
     }
 }

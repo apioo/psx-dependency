@@ -21,6 +21,7 @@
 namespace PSX\Dependency;
 
 use Psr\Container\ContainerInterface;
+use PSX\Dependency\Exception\NotFoundException;
 
 /**
  * A simple and fast PSR container implementation
@@ -31,20 +32,9 @@ use Psr\Container\ContainerInterface;
  */
 class Container implements ContainerInterface
 {
-    /**
-     * @var array
-     */
-    private $factories;
-
-    /**
-     * @var array
-     */
-    private $services;
-
-    /**
-     * @var array
-     */
-    private $parameters;
+    private array $factories;
+    private array $services;
+    private array $parameters;
 
     public function __construct()
     {
@@ -53,11 +43,7 @@ class Container implements ContainerInterface
         $this->parameters = [];
     }
 
-    /**
-     * @param string $id
-     * @param mixed $object
-     */
-    public function set($id, $object)
+    public function set(string $id, $object)
     {
         $name = self::normalizeName($id);
 
@@ -69,11 +55,9 @@ class Container implements ContainerInterface
     }
 
     /**
-     * @param string $id
-     * @return mixed
      * @throws NotFoundException
      */
-    public function get($id)
+    public function get(string $id)
     {
         $name = self::normalizeName($id);
 
@@ -90,44 +74,28 @@ class Container implements ContainerInterface
         return $this->services[$name];
     }
 
-    /**
-     * @param string $id
-     * @return boolean
-     */
-    public function has($id)
+    public function has(string $id): bool
     {
         $name = self::normalizeName($id);
 
         return isset($this->services[$name]) || isset($this->factories[$name]) || method_exists($this, 'get' . $name);
     }
 
-    /**
-     * @param string $name
-     * @return boolean
-     */
-    public function initialized($name)
+    public function initialized(string $name): bool
     {
         $name = self::normalizeName($name);
 
         return isset($this->services[$name]);
     }
 
-    /**
-     * @param string $name
-     * @param mixed $value
-     */
-    public function setParameter($name, $value)
+    public function setParameter(string $name, $value)
     {
         $name = strtolower($name);
 
         $this->parameters[$name] = $value;
     }
 
-    /**
-     * @param string $name
-     * @return mixed
-     */
-    public function getParameter($name)
+    public function getParameter(string $name)
     {
         $name = strtolower($name);
 
@@ -138,31 +106,19 @@ class Container implements ContainerInterface
         }
     }
 
-    /**
-     * @param string $name
-     * @return boolean
-     */
-    public function hasParameter($name)
+    public function hasParameter(string $name): bool
     {
         $name = strtolower($name);
 
         return isset($this->parameters[$name]);
     }
 
-    /**
-     * @param string $name
-     * @return string
-     */
-    public static function normalizeName($name)
+    public static function normalizeName(string $name): string
     {
         return str_replace(' ', '', ucwords(str_replace('_', ' ', $name)));
     }
 
-    /**
-     * @param string $id
-     * @return string
-     */
-    public static function underscore($id)
+    public static function underscore(string $id): string
     {
         return strtolower(preg_replace(array('/([A-Z]+)([A-Z][a-z])/', '/([a-z\d])([A-Z])/'), array('\\1_\\2', '\\1_\\2'), strtr($id, '_', '.')));
     }

@@ -32,20 +32,9 @@ use PSX\Dependency\InspectorInterface;
  */
 class CachedInspector implements InspectorInterface
 {
-    /**
-     * @var \PSX\Dependency\InspectorInterface
-     */
-    protected $inspector;
+    private InspectorInterface $inspector;
+    private CacheItemPoolInterface $cache;
 
-    /**
-     * @var \Psr\Cache\CacheItemPoolInterface
-     */
-    protected $cache;
-
-    /**
-     * @param \PSX\Dependency\InspectorInterface $inspector
-     * @param \Psr\Cache\CacheItemPoolInterface $cache
-     */
     public function __construct(InspectorInterface $inspector, CacheItemPoolInterface $cache)
     {
         $this->inspector = $inspector;
@@ -78,7 +67,7 @@ class CachedInspector implements InspectorInterface
     
     private function cachedCall(string $methodName, string $cacheKey)
     {
-        $item = $this->cache->getItem($cacheKey);
+        $item = $this->cache->getItem(md5($cacheKey));
         if ($item->isHit()) {
             return $item->get();
         }

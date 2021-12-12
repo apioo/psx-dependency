@@ -29,10 +29,7 @@ namespace PSX\Dependency\Tests\Playground;
  */
 class MyRepository implements RepositoryInterface
 {
-    /**
-     * @var string
-     */
-    private $class;
+    private string $class;
 
     public function __construct(string $class)
     {

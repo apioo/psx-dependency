@@ -20,6 +20,8 @@
 
 namespace PSX\Dependency\Tests\Playground;
 
+use PSX\Dependency\Attribute\Inject;
+
 /**
  * FooService
  *
@@ -29,17 +31,13 @@ namespace PSX\Dependency\Tests\Playground;
  */
 class FooService
 {
-    /**
-     * @Inject
-     */
-    protected $foo;
+    #[Inject]
+    private $foo;
 
-    /**
-     * @Inject("foo_bar")
-     */
-    protected $bar;
+    #[Inject('foo_bar')]
+    private $bar;
 
-    protected $property;
+    private $property;
 
     public function __construct($property = null)
     {

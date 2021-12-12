@@ -20,13 +20,12 @@
 
 namespace PSX\Dependency;
 
-use Doctrine\Common\Annotations\Reader;
 use InvalidArgumentException;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Container\ContainerInterface;
-use PSX\Dependency\Annotation\Inject;
+use PSX\Dependency\Attribute\Inject;
+use PSX\Dependency\Exception\InvalidConfigurationException;
 use ReflectionClass;
-use RuntimeException;
 
 /**
  * ObjectBuilder
@@ -37,44 +36,24 @@ use RuntimeException;
  */
 class ObjectBuilder implements ObjectBuilderInterface
 {
-    /**
-     * @var \Psr\Container\ContainerInterface
-     */
-    protected $container;
+    private ContainerInterface $container;
+    private CacheItemPoolInterface $cache;
+    private bool $debug;
 
-    /**
-     * @var \Doctrine\Common\Annotations\Reader
-     */
-    protected $reader;
-
-    /**
-     * @var \Psr\Cache\CacheItemPoolInterface
-     */
-    protected $cache;
-
-    /**
-     * @var boolean
-     */
-    protected $debug;
-
-    /**
-     * @param \Psr\Container\ContainerInterface $container
-     * @param \Doctrine\Common\Annotations\Reader $reader
-     * @param \Psr\Cache\CacheItemPoolInterface $cache
-     * @param boolean $debug
-     */
-    public function __construct(ContainerInterface $container, Reader $reader, CacheItemPoolInterface $cache, $debug)
+    public function __construct(ContainerInterface $container, CacheItemPoolInterface $cache, bool $debug)
     {
         $this->container = $container;
-        $this->reader    = $reader;
-        $this->cache     = $cache;
-        $this->debug     = $debug;
+        $this->cache = $cache;
+        $this->debug = $debug;
     }
 
     /**
      * @inheritdoc
+     * @throws \ReflectionException
+     * @throws \Psr\Cache\InvalidArgumentException
+     * @throws InvalidConfigurationException
      */
-    public function getObject($className, array $constructorArguments = array(), $instanceOf = null)
+    public function getObject(string $className, array $constructorArguments = [], ?string $instanceOf = null): object
     {
         $class = new ReflectionClass($className);
 
@@ -88,11 +67,11 @@ class ObjectBuilder implements ObjectBuilderInterface
             throw new InvalidArgumentException('Class ' . $className . ' must be an instanceof ' . $instanceOf);
         }
 
-        // if we are not in debug mode we can cache the dependency annotations
+        // if we are not in debug mode we can cache the dependency attributes
         // of each class so we do not need to parse the annotations
         if (!$this->debug) {
             $key  = __CLASS__ . $className;
-            $item = $this->cache->getItem($key);
+            $item = $this->cache->getItem(md5($key));
 
             if ($item->isHit()) {
                 $properties = $item->get();
@@ -112,29 +91,24 @@ class ObjectBuilder implements ObjectBuilderInterface
                 $property->setAccessible(true);
                 $property->setValue($object, $this->container->get($service));
             } else {
-                throw new RuntimeException('Trying to inject a not existing service ' . $service);
+                throw new InvalidConfigurationException('Trying to inject a not existing service ' . $service);
             }
         }
 
         return $object;
     }
 
-    /**
-     * @param \ReflectionClass $class
-     * @return array
-     */
-    private function getProperties(ReflectionClass $class)
+    private function getProperties(ReflectionClass $class): array
     {
         $properties = $class->getProperties();
         $result     = [];
 
         foreach ($properties as $property) {
-            $inject = $this->reader->getPropertyAnnotation($property, '\\PSX\\Dependency\\Annotation\\Inject');
-            if (!$inject instanceof Inject) {
+            $service = $this->getServiceId($property);
+            if ($service === null) {
                 continue;
             }
 
-            $service = $inject->getService();
             if (!empty($service)) {
                 $result[$property->getName()] = $service;
                 continue;
@@ -154,13 +128,19 @@ class ObjectBuilder implements ObjectBuilderInterface
 
     private function getPropertyType(\ReflectionProperty $property): ?string
     {
-        if (!method_exists($property, 'getType')) {
-            return null;
-        }
-
         $type = $property->getType();
         if ($type instanceof \ReflectionNamedType) {
             return $type->getName();
+        }
+
+        return null;
+    }
+
+    private function getServiceId(\ReflectionProperty $property): ?string
+    {
+        $attributes = $property->getAttributes(Inject::class);
+        foreach ($attributes as $attribute) {
+            return $attribute->getArguments()[0] ?? '';
         }
 
         return null;

@@ -31,30 +31,16 @@ use Psr\Container\ContainerInterface;
  */
 class TypeResolver implements TypeResolverInterface
 {
-    /**
-     * @var ContainerInterface
-     */
-    private $container;
-
-    /**
-     * @var InspectorInterface
-     */
-    private $inspector;
-
-    /**
-     * @var array
-     */
-    private $types;
-
-    /**
-     * @var array
-     */
-    private $resolvers;
+    private ContainerInterface $container;
+    private InspectorInterface $inspector;
+    private array $types;
+    private array $resolvers;
 
     public function __construct(ContainerInterface $container, InspectorInterface $inspector)
     {
         $this->container = $container;
         $this->inspector = $inspector;
+        $this->types = [];
         $this->resolvers = [];
     }
 
@@ -79,7 +65,7 @@ class TypeResolver implements TypeResolverInterface
     /**
      * @inheritDoc
      */
-    public function addFactoryResolver(string $interface, \Closure $resolver)
+    public function addFactoryResolver(string $interface, \Closure $resolver): void
     {
         $this->resolvers[$interface] = $resolver;
     }

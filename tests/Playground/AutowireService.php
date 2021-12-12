@@ -29,15 +29,8 @@ namespace PSX\Dependency\Tests\Playground;
  */
 class AutowireService
 {
-    /**
-     * @var FooService
-     */
-    private $foo;
-
-    /**
-     * @var BarService
-     */
-    private $bar;
+    private FooService $foo;
+    private BarService $bar;
 
     public function __construct(FooService $foo, BarService $bar)
     {
@@ -45,17 +38,11 @@ class AutowireService
         $this->bar = $bar;
     }
 
-    /**
-     * @return FooService
-     */
     public function getFoo(): FooService
     {
         return $this->foo;
     }
 
-    /**
-     * @return BarService
-     */
     public function getBar(): BarService
     {
         return $this->bar;
