@@ -17,6 +17,7 @@ definitions which can be accessed through the `get` method.
 ```php
 <?php
 
+use PSX\Dependency\Attribute\Tag;
 use PSX\Dependency\Container;
 use PSX\Dependency\Tests\Playground\FooService;
 use PSX\Dependency\Tests\Playground\BarService;
@@ -27,10 +28,8 @@ class MyContainer extends Container
     {
         return new FooService();
     }
-    
-    /**
-     * @Tag("my_tag")
-     */
+
+    #[Tag('my_tag')]
     public function getBarService(): BarService
     {
         return new BarService($this->get('foo_service'));
@@ -52,11 +51,8 @@ use PSX\Dependency\AutowireResolver;
 use PSX\Dependency\Tests\Playground\MyContainer;
 use PSX\Dependency\Tests\Playground\AutowireService;
 
-$reader = new SimpleAnnotationReader();
-$reader->addNamespace('PSX\Dependency\Annotation');
-
 $container = new MyContainer();
-$inspector = new ContainerInspector($container, $reader);
+$inspector = new ContainerInspector($container);
 $typeResolver = new TypeResolver($container, $inspector);
 $autowireResolver = new AutowireResolver($typeResolver);
 
@@ -104,11 +100,8 @@ use PSX\Dependency\Inspector\ContainerInspector;
 use PSX\Dependency\TagResolver;
 use PSX\Dependency\Tests\Playground\MyContainer;
 
-$reader = new SimpleAnnotationReader();
-$reader->addNamespace('PSX\Dependency\Annotation');
-
 $container = new MyContainer();
-$inspector = new ContainerInspector($container, $reader);
+$inspector = new ContainerInspector($container);
 $tagResolver = new TagResolver($container, $inspector);
 
 $services = $tagResolver->getServicesByTag('my_tag');
@@ -128,10 +121,7 @@ into an optimized class which improves the performance.
 use PSX\Dependency\Compiler\PhpCompiler;
 use PSX\Dependency\Tests\Playground\MyContainer;
 
-$reader = new SimpleAnnotationReader();
-$reader->addNamespace('PSX\Dependency\Annotation');
-
-$compiler = new PhpCompiler($reader, 'Container', __NAMESPACE__);
+$compiler = new PhpCompiler('Container', __NAMESPACE__);
 $container = new MyContainer();
 
 // contains the compiled DI container
@@ -152,15 +142,11 @@ feasible.
 
 class MyController
 {
-    /**
-     * @Inject 
-     */
-    protected $fooService;
+    #[Inject]
+    protected FooService $fooService;
 
-    /**
-     * @Inject("bar_service")
-     */
-    protected $baz;
+    #[Inject('bar_service')]
+    protected BarService $baz;
 
     public function doSomething()
     {
@@ -180,9 +166,7 @@ use PSX\Dependency\Tests\Playground\MyContainer;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 $container = new MyContainer();
-$reader = new SimpleAnnotationReader();
-$reader->addNamespace('PSX\Dependency\Annotation');
-$cache = new ArrayAdapter();
+$cache = new Pool(new ArrayCache());
 $debug = false;
 
 $builder = new ObjectBuilder(

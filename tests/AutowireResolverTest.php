@@ -20,12 +20,10 @@
 
 namespace PSX\Dependency\Tests;
 
-use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use PHPUnit\Framework\TestCase;
 use PSX\Dependency\AutowireResolver;
 use PSX\Dependency\AutowireResolverInterface;
 use PSX\Dependency\Inspector\ContainerInspector;
-use PSX\Dependency\TagResolver;
 use PSX\Dependency\TypeResolver;
 
 /**
@@ -61,11 +59,8 @@ class AutowireResolverTest extends TestCase
 
     private function newAutowireResolver(): AutowireResolverInterface
     {
-        $reader = new SimpleAnnotationReader();
-        $reader->addNamespace('PSX\Dependency\Annotation');
-
         $container = new Playground\MyContainer();
-        $inspector = new ContainerInspector($container, $reader);
+        $inspector = new ContainerInspector($container);
         $typeResolver = new TypeResolver($container, $inspector);
 
         return new AutowireResolver($typeResolver);

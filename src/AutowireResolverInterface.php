@@ -34,10 +34,8 @@ interface AutowireResolverInterface
      * Tries to create a new instance of the provided class by automatically
      * resolving all constructor arguments
      * 
-     * @param string $class
-     * @return mixed
-     * @throws \PSX\Dependency\AutowiredException
-     * @throws \PSX\Dependency\NotFoundException
+     * @throws \PSX\Dependency\Exception\AutowiredException
+     * @throws \PSX\Dependency\Exception\NotFoundException
      */
     public function getObject(string $class);
 }

@@ -20,7 +20,6 @@
 
 namespace PSX\Dependency\Tests;
 
-use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use PHPUnit\Framework\TestCase;
 use PSX\Dependency\Inspector\ContainerInspector;
 use PSX\Dependency\TagResolver;
@@ -48,11 +47,8 @@ class TagResolverTest extends TestCase
 
     private function newTagResolver(): TagResolverInterface
     {
-        $reader = new SimpleAnnotationReader();
-        $reader->addNamespace('PSX\Dependency\Annotation');
-
         $container = new Playground\MyContainer();
-        $inspector = new ContainerInspector($container, $reader);
+        $inspector = new ContainerInspector($container);
 
         return new TagResolver($container, $inspector);
     }

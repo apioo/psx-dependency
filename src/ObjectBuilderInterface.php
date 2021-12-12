@@ -29,11 +29,5 @@ namespace PSX\Dependency;
  */
 interface ObjectBuilderInterface
 {
-    /**
-     * @param string $className
-     * @param array $constructorArguments
-     * @param string $instanceOf
-     * @return object
-     */
-    public function getObject($className, array $constructorArguments = array(), $instanceOf = null);
+    public function getObject(string $className, array $constructorArguments = array(), ?string $instanceOf = null): object;
 }

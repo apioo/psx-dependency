@@ -18,15 +18,17 @@
  * limitations under the License.
  */
 
-namespace PSX\Dependency;
+namespace PSX\Dependency\Exception;
+
+use Psr\Container\NotFoundExceptionInterface;
 
 /**
- * InvalidConfigurationException
+ * NotFoundException
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class InvalidConfigurationException extends \Exception
+class NotFoundException extends \Exception implements NotFoundExceptionInterface
 {
 }

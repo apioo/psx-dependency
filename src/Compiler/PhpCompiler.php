@@ -20,7 +20,6 @@
 
 namespace PSX\Dependency\Compiler;
 
-use Doctrine\Common\Annotations\Reader;
 use Psr\Container\ContainerInterface;
 use PSX\Dependency\CompilerInterface;
 use PSX\Dependency\Inspector\ContainerInspector;
@@ -34,36 +33,23 @@ use PSX\Dependency\Inspector\ContainerInspector;
  */
 class PhpCompiler implements CompilerInterface
 {
-    /**
-     * @var Reader
-     */
-    private $reader;
+    private string $class;
+    private ?string $namespace;
 
-    /**
-     * @var string
-     */
-    private $class;
-
-    /**
-     * @var string|null
-     */
-    private $namespace;
-
-    /**
-     * @param Reader $reader
-     * @param string $class
-     * @param string|null $namespace
-     */
-    public function __construct(Reader $reader, string $class, ?string $namespace = null)
+    public function __construct(string $class, ?string $namespace = null)
     {
-        $this->reader = $reader;
         $this->class = $class;
         $this->namespace = $namespace;
     }
 
+    /**
+     * @throws \ReflectionException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
     public function compile(ContainerInterface $container): string
     {
-        $inspector = new ContainerInspector($container, $this->reader);
+        $inspector = new ContainerInspector($container);
 
         $ids   = $inspector->getServiceIds();
         $types = $inspector->getTypedServiceIds();

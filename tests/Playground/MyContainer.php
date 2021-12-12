@@ -20,6 +20,7 @@
 
 namespace PSX\Dependency\Tests\Playground;
 
+use PSX\Dependency\Attribute\Tag;
 use PSX\Dependency\Container;
 
 /**
@@ -31,17 +32,12 @@ use PSX\Dependency\Container;
  */
 class MyContainer extends Container
 {
-    /**
-     * @return \PSX\Dependency\Tests\Playground\FooService
-     */
-    public function getFooService()
+    public function getFooService(): FooService
     {
         return new FooService();
     }
 
-    /**
-     * @Tag("my_tag")
-     */
+    #[Tag('my_tag')]
     public function getBarService(): BarService
     {
         return new BarService();

@@ -18,31 +18,15 @@
  * limitations under the License.
  */
 
-namespace PSX\Dependency\Annotation;
+namespace PSX\Dependency\Exception;
 
 /**
- * Tag
+ * AutowiredException
  *
- * @Annotation
- * @Target("METHOD")
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    http://phpsx.org
  */
-class Tag
+class AutowiredException extends \Exception
 {
-    /**
-     * @var string
-     */
-    protected $tag;
-
-    public function __construct(array $values)
-    {
-        $this->tag = current($values);
-    }
-
-    public function getTag()
-    {
-        return $this->tag;
-    }
 }

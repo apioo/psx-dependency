@@ -20,7 +20,6 @@
 
 namespace PSX\Dependency\Tests;
 
-use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use PSX\Dependency\Inspector\ContainerInspector;
@@ -65,11 +64,8 @@ class TypeResolverTest extends TestCase
 
     private function newTypeResolver(): TypeResolver
     {
-        $reader = new SimpleAnnotationReader();
-        $reader->addNamespace('PSX\Dependency\Annotation');
-
         $container = new Playground\MyContainer();
-        $inspector = new ContainerInspector($container, $reader);
+        $inspector = new ContainerInspector($container);
 
         return new TypeResolver($container, $inspector);
     }

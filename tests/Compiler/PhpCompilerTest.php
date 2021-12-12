@@ -20,7 +20,6 @@
 
 namespace PSX\Dependency\Tests\Compiler;
 
-use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use PHPUnit\Framework\TestCase;
 use PSX\Dependency\Compiler\PhpCompiler;
 use PSX\Dependency\CompilerInterface;
@@ -59,9 +58,6 @@ class PhpCompilerTest extends TestCase
 
     protected function newCompiler(): CompilerInterface
     {
-        $reader = new SimpleAnnotationReader();
-        $reader->addNamespace('PSX\Dependency\Annotation');
-
-        return new PhpCompiler($reader, 'Container', __NAMESPACE__);
+        return new PhpCompiler('Container', __NAMESPACE__);
     }
 }

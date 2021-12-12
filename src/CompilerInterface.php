@@ -33,9 +33,6 @@ interface CompilerInterface
 {
     /**
      * Compiles the provided container into optimized PHP code
-     * 
-     * @param ContainerInterface $container
-     * @return string
      */
     public function compile(ContainerInterface $container): string;
 }
