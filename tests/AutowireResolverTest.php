@@ -61,11 +61,8 @@ class AutowireResolverTest extends TestCase
 
     private function newAutowireResolver(): AutowireResolverInterface
     {
-        $reader = new SimpleAnnotationReader();
-        $reader->addNamespace('PSX\Dependency\Annotation');
-
         $container = new Playground\MyContainer();
-        $inspector = new ContainerInspector($container, $reader);
+        $inspector = new ContainerInspector($container);
         $typeResolver = new TypeResolver($container, $inspector);
 
         return new AutowireResolver($typeResolver);

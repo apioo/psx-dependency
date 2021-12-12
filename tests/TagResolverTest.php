@@ -48,11 +48,8 @@ class TagResolverTest extends TestCase
 
     private function newTagResolver(): TagResolverInterface
     {
-        $reader = new SimpleAnnotationReader();
-        $reader->addNamespace('PSX\Dependency\Annotation');
-
         $container = new Playground\MyContainer();
-        $inspector = new ContainerInspector($container, $reader);
+        $inspector = new ContainerInspector($container);
 
         return new TagResolver($container, $inspector);
     }

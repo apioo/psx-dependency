@@ -59,9 +59,6 @@ class PhpCompilerTest extends TestCase
 
     protected function newCompiler(): CompilerInterface
     {
-        $reader = new SimpleAnnotationReader();
-        $reader->addNamespace('PSX\Dependency\Annotation');
-
-        return new PhpCompiler($reader, 'Container', __NAMESPACE__);
+        return new PhpCompiler('Container', __NAMESPACE__);
     }
 }

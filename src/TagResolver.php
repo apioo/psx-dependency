@@ -31,15 +31,8 @@ use Psr\Container\ContainerInterface;
  */
 class TagResolver implements TagResolverInterface
 {
-    /**
-     * @var ContainerInterface
-     */
-    private $container;
-
-    /**
-     * @var InspectorInterface
-     */
-    private $inspector;
+    private ContainerInterface $container;
+    private InspectorInterface $inspector;
 
     public function __construct(ContainerInterface $container, InspectorInterface $inspector)
     {

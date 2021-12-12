@@ -20,9 +20,9 @@
 
 namespace PSX\Dependency\Inspector;
 
-use Doctrine\Common\Annotations\Reader;
+use JetBrains\PhpStorm\Pure;
 use Psr\Container\ContainerInterface;
-use PSX\Dependency\Annotation\Tag;
+use PSX\Dependency\Attribute\Tag;
 use PSX\Dependency\Container;
 use PSX\Dependency\InspectorInterface;
 
@@ -36,24 +36,11 @@ use PSX\Dependency\InspectorInterface;
  */
 class ContainerInspector implements InspectorInterface
 {
-    /**
-     * @var \Psr\Container\ContainerInterface
-     */
-    protected $container;
+    private ContainerInterface $container;
 
-    /**
-     * @var \Doctrine\Common\Annotations\Reader
-     */
-    protected $reader;
-
-    /**
-     * @param \Psr\Container\ContainerInterface $container
-     * @param \Doctrine\Common\Annotations\Reader $reader
-     */
-    public function __construct(ContainerInterface $container, Reader $reader)
+    public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
-        $this->reader    = $reader;
     }
 
     public function getServiceIds(): array
@@ -71,6 +58,11 @@ class ContainerInspector implements InspectorInterface
         return $services;
     }
 
+    /**
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \ReflectionException
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
     public function getTypedServiceIds(): array
     {
         if ($this->container instanceof InspectorInterface) {
@@ -143,47 +135,23 @@ class ContainerInspector implements InspectorInterface
         return $services;
     }
 
-    /**
-     * @param \ReflectionMethod $method
-     * @return string|null
-     */
+    #[Pure]
     private function getTag(\ReflectionMethod $method): ?string
     {
-        $doc = $method->getDocComment();
-        if (!empty($doc)) {
-            $tag = $this->reader->getMethodAnnotation($method, Tag::class);
-            if ($tag instanceof Tag) {
-                return $tag->getTag();
-            }
+        $attributes = $method->getAttributes(Tag::class);
+        foreach ($attributes as $attribute) {
+            return $attribute->getArguments()[0] ?? null;
         }
 
         return null;
     }
 
+    #[Pure]
     private function getReturnTypeForMethod(\ReflectionMethod $method): ?string
     {
         $returnType = $method->getReturnType();
         if ($returnType instanceof \ReflectionNamedType) {
             return $returnType->getName();
-        }
-
-        $comment = $method->getDocComment();
-        if (!empty($comment)) {
-            $type = self::getAnnotationValue($comment, 'return');
-            if ($type !== null) {
-                return $type;
-            }
-        }
-
-        return null;
-    }
-
-    private function getAnnotationValue(string $comment, string $annotation): ?string
-    {
-        preg_match('/@' . $annotation . ' ([a-zA-Z0-9_\\x7f-\\xff\\x5c]+)/', $comment, $matches);
-
-        if (isset($matches[1])) {
-            return $matches[1];
         }
 
         return null;

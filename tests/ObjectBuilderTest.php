@@ -26,6 +26,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use PSX\Cache\Pool;
 use PSX\Dependency\Container;
+use PSX\Dependency\Exception\InvalidConfigurationException;
 use PSX\Dependency\ObjectBuilder;
 
 /**
@@ -52,22 +53,20 @@ class ObjectBuilderTest extends TestCase
         $this->assertNull($object->getProperty());
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testGetObjectInjectUnknownService()
     {
+        $this->expectException(InvalidConfigurationException::class);
+
         $container = new Container();
         
         $builder = $this->newObjectBuilder($container);
         $builder->getObject(Playground\FooService::class);
     }
 
-    /**
-     * @expectedException \ReflectionException
-     */
     public function testGetObjectUnknownClass()
     {
+        $this->expectException(\ReflectionException::class);
+
         $container = new Container();
         
         $builder = $this->newObjectBuilder($container);
@@ -86,11 +85,10 @@ class ObjectBuilderTest extends TestCase
         $this->assertInstanceof(Playground\FooService::class, $object);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testGetObjectInstanceOfInvalid()
     {
+        $this->expectException(\InvalidArgumentException::class);
+
         $container = new Container();
         $container->set('foo', new \stdClass());
         $container->set('foo_bar', new \stdClass());
@@ -149,13 +147,10 @@ class ObjectBuilderTest extends TestCase
 
     private function newObjectBuilder(ContainerInterface $container, $cache = null, $debug = true)
     {
-        $reader = new SimpleAnnotationReader();
-        $reader->addNamespace('PSX\Dependency\Annotation');
-
         if ($cache === null) {
             $cache = new Pool(new ArrayCache());
         }
 
-        return new ObjectBuilder($container, $reader, $cache, $debug);
+        return new ObjectBuilder($container, $cache, $debug);
     }
 }

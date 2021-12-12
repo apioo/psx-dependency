@@ -31,7 +31,8 @@ use PSX\Dependency\Container;
  */
 class ProjectServiceContainer extends Container
 {
-    public $__bar, $__foo_bar;
+    public \stdClass $__bar;
+    public \stdClass $__foo_bar;
 
     public function __construct()
     {
@@ -56,6 +57,6 @@ class ProjectServiceContainer extends Container
 
     protected function getScalar()
     {
-        return array('foo', 'bar');
+        return ['foo', 'bar'];
     }
 }

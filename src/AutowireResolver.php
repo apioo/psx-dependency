@@ -20,6 +20,8 @@
 
 namespace PSX\Dependency;
 
+use PSX\Dependency\Exception\AutowiredException;
+
 /**
  * AutowireResolver
  *
@@ -29,10 +31,7 @@ namespace PSX\Dependency;
  */
 class AutowireResolver implements AutowireResolverInterface
 {
-    /**
-     * @var TypeResolverInterface
-     */
-    private $typeResolver;
+    private TypeResolverInterface $typeResolver;
 
     public function __construct(TypeResolverInterface $typeResolver)
     {

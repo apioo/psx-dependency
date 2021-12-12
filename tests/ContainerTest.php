@@ -116,7 +116,7 @@ class ContainerTest extends TestCase
     }
 
     /**
-     * @expectedException \PSX\Dependency\NotFoundException
+     * @expectedException \PSX\Dependency\Exception\NotFoundException
      */
     public function testInvalidGetParameter()
     {

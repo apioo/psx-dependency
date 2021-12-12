@@ -65,11 +65,8 @@ class TypeResolverTest extends TestCase
 
     private function newTypeResolver(): TypeResolver
     {
-        $reader = new SimpleAnnotationReader();
-        $reader->addNamespace('PSX\Dependency\Annotation');
-
         $container = new Playground\MyContainer();
-        $inspector = new ContainerInspector($container, $reader);
+        $inspector = new ContainerInspector($container);
 
         return new TypeResolver($container, $inspector);
     }

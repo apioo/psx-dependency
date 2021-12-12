@@ -31,9 +31,6 @@ interface TagResolverInterface
 {
     /**
      * Returns all services which have a specific tag assigned
-     * 
-     * @param string $tag
-     * @return iterable
      */
     public function getServicesByTag(string $tag): iterable;
 }
