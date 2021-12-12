@@ -107,7 +107,7 @@ $tagResolver = new TagResolver($container, $inspector);
 $services = $tagResolver->getServicesByTag('my_tag');
 ```
 
-To tag you service you need to add the `@Tag` annotation to your service
+To tag you service you need to add the `#Tag` attribute to your service
 definition method. Then it is possible to use the tag resolver to receive all
 services which have added a specific tag.
 
@@ -131,7 +131,7 @@ $code = $compiler->compile($container);
 
 ### Object builder
 
-The object builder resolves properties with an `@Inject` annotation and tries
+The object builder resolves properties with an `#Inject` attribute and tries
 to inject the fitting service to the property. If no explicit service name was 
 provided the property name is used. Note usually it is recommended to use simple
 constructor injection, this class is designed for cases where this is not 
