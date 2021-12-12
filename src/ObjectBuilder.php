@@ -67,7 +67,7 @@ class ObjectBuilder implements ObjectBuilderInterface
             throw new InvalidArgumentException('Class ' . $className . ' must be an instanceof ' . $instanceOf);
         }
 
-        // if we are not in debug mode we can cache the dependency annotations
+        // if we are not in debug mode we can cache the dependency attributes
         // of each class so we do not need to parse the annotations
         if (!$this->debug) {
             $key  = __CLASS__ . $className;

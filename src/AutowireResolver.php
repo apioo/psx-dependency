@@ -40,6 +40,7 @@ class AutowireResolver implements AutowireResolverInterface
 
     /**
      * @inheritDoc
+     * @throws \ReflectionException
      */
     public function getObject(string $class)
     {
