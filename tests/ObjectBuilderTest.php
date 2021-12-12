@@ -28,6 +28,8 @@ use PSX\Cache\Pool;
 use PSX\Dependency\Container;
 use PSX\Dependency\Exception\InvalidConfigurationException;
 use PSX\Dependency\ObjectBuilder;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 
 /**
  * ObjectBuilderTest
@@ -126,7 +128,7 @@ class ObjectBuilderTest extends TestCase
         $container->set('foo', new \stdClass());
         $container->set('foo_bar', new \stdClass());
 
-        $cache   = new Pool(new ArrayCache());
+        $cache   = new ArrayAdapter();
         $builder = $this->newObjectBuilder($container, $cache, false);
         $object  = $builder->getObject(Playground\FooService::class);
 
@@ -148,7 +150,7 @@ class ObjectBuilderTest extends TestCase
     private function newObjectBuilder(ContainerInterface $container, $cache = null, $debug = true)
     {
         if ($cache === null) {
-            $cache = new Pool(new ArrayCache());
+            $cache = new ArrayAdapter();
         }
 
         return new ObjectBuilder($container, $cache, $debug);

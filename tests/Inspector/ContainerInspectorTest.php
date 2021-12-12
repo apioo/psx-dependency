@@ -42,12 +42,6 @@ class CachedInspectorTest extends InspectorTestCase
 {
     protected function newInspector(ContainerInterface $container): InspectorInterface
     {
-        $reader = new SimpleAnnotationReader();
-        $reader->addNamespace('PSX\Dependency\Annotation');
-
-        $inspector = new ContainerInspector($container, $reader);
-        $cache     = new Pool(new ArrayCache());
-
-        return new CachedInspector($inspector, $cache, false);
+        return new ContainerInspector($container);
     }
 }
