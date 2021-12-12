@@ -132,13 +132,13 @@ class ObjectBuilderTest extends TestCase
         $builder = $this->newObjectBuilder($container, $cache, false);
         $object  = $builder->getObject(Playground\FooService::class);
 
-        $item = $cache->getItem(ObjectBuilder::class . Playground\FooService::class);
+        $item = $cache->getItem(md5(ObjectBuilder::class . Playground\FooService::class));
 
         $this->assertInstanceof(Playground\FooService::class, $object);
         $this->assertTrue($item->isHit());
         $this->assertEquals(['foo' => 'foo', 'bar' => 'foo_bar'], $item->get());
 
-        $item = $cache->getItem(ObjectBuilder::class . Playground\FooService::class);
+        $item = $cache->getItem(md5(ObjectBuilder::class . Playground\FooService::class));
 
         $object = $builder->getObject(Playground\FooService::class);
 

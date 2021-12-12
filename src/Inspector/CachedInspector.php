@@ -67,7 +67,7 @@ class CachedInspector implements InspectorInterface
     
     private function cachedCall(string $methodName, string $cacheKey)
     {
-        $item = $this->cache->getItem($cacheKey);
+        $item = $this->cache->getItem(md5($cacheKey));
         if ($item->isHit()) {
             return $item->get();
         }

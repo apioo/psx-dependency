@@ -72,7 +72,7 @@ class ObjectBuilder implements ObjectBuilderInterface
         // of each class so we do not need to parse the annotations
         if (!$this->debug) {
             $key  = __CLASS__ . $className;
-            $item = $this->cache->getItem($key);
+            $item = $this->cache->getItem(md5($key));
 
             if ($item->isHit()) {
                 $properties = $item->get();
