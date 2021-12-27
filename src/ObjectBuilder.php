@@ -36,22 +36,21 @@ use ReflectionClass;
  */
 class ObjectBuilder implements ObjectBuilderInterface
 {
-    private ContainerInterface $container;
+    private TypeResolverInterface $typeResolver;
     private CacheItemPoolInterface $cache;
     private bool $debug;
 
-    public function __construct(ContainerInterface $container, CacheItemPoolInterface $cache, bool $debug)
+    public function __construct(TypeResolverInterface $typeResolver, CacheItemPoolInterface $cache, bool $debug)
     {
-        $this->container = $container;
+        $this->typeResolver = $typeResolver;
         $this->cache = $cache;
         $this->debug = $debug;
     }
 
     /**
-     * @inheritdoc
-     * @throws \ReflectionException
+     * @throws Exception\NotFoundException
      * @throws \Psr\Cache\InvalidArgumentException
-     * @throws InvalidConfigurationException
+     * @throws \ReflectionException
      */
     public function getObject(string $className, array $constructorArguments = [], ?string $instanceOf = null): object
     {
@@ -70,8 +69,7 @@ class ObjectBuilder implements ObjectBuilderInterface
         // if we are not in debug mode we can cache the dependency attributes
         // of each class so we do not need to parse the annotations
         if (!$this->debug) {
-            $key  = __CLASS__ . $className;
-            $item = $this->cache->getItem(md5($key));
+            $item = $this->cache->getItem(md5(__CLASS__ . $className));
 
             if ($item->isHit()) {
                 $properties = $item->get();
@@ -85,14 +83,12 @@ class ObjectBuilder implements ObjectBuilderInterface
             $properties = $this->getProperties($class);
         }
 
-        foreach ($properties as $propertyName => $service) {
-            if ($this->container->has($service)) {
-                $property = $class->getProperty($propertyName);
-                $property->setAccessible(true);
-                $property->setValue($object, $this->container->get($service));
-            } else {
-                throw new InvalidConfigurationException('Trying to inject a not existing service ' . $service);
-            }
+        foreach ($properties as $propertyName => $serviceId) {
+            $service = $this->typeResolver->getServiceByType($serviceId);
+
+            $property = $class->getProperty($propertyName);
+            $property->setAccessible(true);
+            $property->setValue($object, $service);
         }
 
         return $object;

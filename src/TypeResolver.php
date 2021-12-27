@@ -45,7 +45,8 @@ class TypeResolver implements TypeResolverInterface
     }
 
     /**
-     * @inheritDoc
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function getServiceByType(string $class)
     {
@@ -62,18 +63,11 @@ class TypeResolver implements TypeResolverInterface
         }
     }
 
-    /**
-     * @inheritDoc
-     */
     public function addFactoryResolver(string $interface, \Closure $resolver): void
     {
         $this->resolvers[$interface] = $resolver;
     }
 
-    /**
-     * @param string $class
-     * @return \Closure|null
-     */
     private function getResolverForClass(string $class): ?\Closure
     {
         foreach ($this->resolvers as $interface => $resolver) {
