@@ -24,7 +24,10 @@ use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use PSX\Dependency\Container;
 use PSX\Dependency\Exception\InvalidConfigurationException;
+use PSX\Dependency\Exception\NotFoundException;
+use PSX\Dependency\Inspector\ContainerInspector;
 use PSX\Dependency\ObjectBuilder;
+use PSX\Dependency\TypeResolver;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 /**
@@ -53,7 +56,7 @@ class ObjectBuilderTest extends TestCase
 
     public function testGetObjectInjectUnknownService()
     {
-        $this->expectException(InvalidConfigurationException::class);
+        $this->expectException(NotFoundException::class);
 
         $container = new Container();
         
@@ -149,6 +152,8 @@ class ObjectBuilderTest extends TestCase
             $cache = new ArrayAdapter();
         }
 
-        return new ObjectBuilder($container, $cache, $debug);
+        $typeResolver = new TypeResolver($container, new ContainerInspector($container));
+
+        return new ObjectBuilder($typeResolver, $cache, $debug);
     }
 }
